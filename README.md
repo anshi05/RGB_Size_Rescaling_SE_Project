@@ -18,8 +18,9 @@ Make sure you have the following installed:
 1.  Clone the repository:
 
     ```bash
-    git clone <repository-url>
-    cd rgb-image-rescaler
+    git clone https://github.com/anshi05/RGB_Size_Rescaling_SE_Project
+    cd rgb_size_rescaling_se_project
+
     ```
 
 2.  Install dependencies using pnpm:
