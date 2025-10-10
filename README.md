@@ -19,7 +19,7 @@ Make sure you have the following installed:
 
     ```bash
     git clone https://github.com/anshi05/RGB_Size_Rescaling_SE_Project
-    cd rgb_size_rescaling_se_project
+    cd RGB_Size_Rescaling_SE_Project
 
     ```
 
