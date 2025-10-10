@@ -66,15 +66,3 @@ Bilinear interpolation calculates the color of a new pixel based on a weighted a
 
 Bicubic interpolation is a more sophisticated method that considers 16 (4x4) surrounding pixels to determine the color of a new pixel. It uses a cubic polynomial to achieve a smoother and more accurate result compared to bilinear interpolation. This often yields the best quality for image enlargement, preserving details and minimizing artifacts, though it is the most computationally intensive of the three methods.
 
-## API Endpoints
-
-### `/api/resize`
-
-* **Method:** `POST`
-* **Description:** Resizes an uploaded image.
-* **Request Body:**
-  * `image`: The image file to resize.
-  * `width`: The desired width for the image.
-  * `height`: The desired height for the image.
-* **Response:** The resized image.
-
