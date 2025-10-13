@@ -4,10 +4,9 @@ import { useState, useEffect, useRef } from "react"
 import { ArrowRight, Zap, ImageIcon, Download, Sparkles, Users, Clock, Star, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ImageResizerApp } from "@/components/image-resizer-app"
+import Link from "next/link"
 
 export function LandingPage() {
-  const [showApp, setShowApp] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [activeFeature, setActiveFeature] = useState(0)
   const featuresRef = useRef(null)
@@ -33,10 +32,6 @@ export function LandingPage() {
 
     return () => observer.disconnect()
   }, [])
-
-  if (showApp) {
-    return <ImageResizerApp onBack={() => setShowApp(false)} />
-  }
 
   const features = [
     {
@@ -106,13 +101,14 @@ export function LandingPage() {
               PixelPerfect
             </span>
           </div>
-          <Button
-            onClick={() => setShowApp(true)}
-            className="bg-white/10 backdrop-blur-lg border border-white/20 text-white hover:bg-white/20 hover:scale-105 hover:shadow-2xl hover:shadow-white/10 transition-all duration-300 group px-8 py-2"
-          >
-            Launch App
-            <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
-          </Button>
+          <Link href="/resizer">
+            <Button
+              className="bg-white/10 backdrop-blur-lg border border-white/20 text-white hover:bg-white/20 hover:scale-105 hover:shadow-2xl hover:shadow-white/10 transition-all duration-300 group px-8 py-2"
+            >
+              Launch App
+              <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
         </div>
       </nav>
 
@@ -136,15 +132,16 @@ export function LandingPage() {
           </p>
 
           <div className={`flex flex-col sm:flex-row gap-6 justify-center items-center transform transition-all duration-700 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-            <Button
-              onClick={() => setShowApp(true)}
-              size="lg"
-              className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-10 py-6 text-lg font-semibold shadow-2xl hover:shadow-rose-500/40 transition-all duration-300 transform hover:scale-105 group relative overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              Start Resizing Now
-              <Zap className="ml-3 h-5 w-5 transform group-hover:scale-125 transition-transform" />
-            </Button>
+            <Link href="/resizer">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-10 py-6 text-lg font-semibold shadow-2xl hover:shadow-rose-500/40 transition-all duration-300 transform hover:scale-105 group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                Start Resizing Now
+                <Zap className="ml-3 h-5 w-5 transform group-hover:scale-125 transition-transform" />
+              </Button>
+            </Link>
             <Button
               variant="outline"
               size="lg"
@@ -247,15 +244,16 @@ export function LandingPage() {
             <p className="text-white/80 text-xl mb-10 relative z-10 max-w-2xl mx-auto">
               Join thousands of creative professionals who trust PixelPerfect for their image resizing needs.
             </p>
-            <Button
-              onClick={() => setShowApp(true)}
-              size="lg"
-              className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-12 py-6 text-lg font-semibold shadow-2xl hover:shadow-rose-500/40 transition-all duration-300 transform hover:scale-105 group relative overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              Launch PixelPerfect
-              <ArrowRight className="ml-3 h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link href="/resizer">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-12 py-6 text-lg font-semibold shadow-2xl hover:shadow-rose-500/40 transition-all duration-300 transform hover:scale-105 group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                Launch PixelPerfect
+                <ArrowRight className="ml-3 h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

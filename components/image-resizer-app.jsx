@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
 import React from "react";
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
 import { Upload, Download, Loader2, ZoomIn, ArrowLeft, Sparkles, ImageIcon, Settings, Lock, Unlock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -33,6 +33,8 @@ export function ImageResizerApp({ onBack }) {
   const [lockAspectRatio, setLockAspectRatio] = useState(false)
   const [widthError, setWidthError] = useState("")
   const [heightError, setHeightError] = useState("")
+  const resizedImageRef = useRef(null)
+  const [isResized, setIsResized] = useState(false)
 
   const { handleFile, handleFileInput, handleDrag, handleDrop } = useImageUploader(
     setOriginalImage,
@@ -40,12 +42,16 @@ export function ImageResizerApp({ onBack }) {
     setSelectedFile,
     setOriginalDimensions,
     setAspectRatio,
+    // Reset isResized when a new file is uploaded
+    setIsResized,
   );
 
   const handleResize = async () => {
     if (!selectedFile) return;
 
     setIsProcessing(true)
+    // Reset isResized when starting a new resize operation
+    setIsResized(false)
 
     try {
       const resizedBlob = await ImageProcessor.resizeImage(
@@ -61,8 +67,16 @@ export function ImageResizerApp({ onBack }) {
       console.error("Error resizing image:", error)
       alert("Failed to resize image. Please try again.")
     } finally {
-      setIsProcessing(false)
+      setTimeout(() => {
+        setIsProcessing(false)
+        setIsResized(true)
+        // Scroll to resized image section
+        if (resizedImageRef.current) {
+          resizedImageRef.current.scrollIntoView({ behavior: "smooth", block: "center" })
+        }
+      }, 500) // Keep processing for at least 5 seconds
     }
+    
   }
 
   const downloadResizedImage = () => {
@@ -142,6 +156,9 @@ export function ImageResizerApp({ onBack }) {
               </div>
               <p className="text-3xl font-semibold text-gray-900 mb-4">Drop your image here</p>
               <p className="text-gray-500 mb-8 text-lg max-w-md mx-auto">Supports JPG, JPEG, and PNG files up to 10MB</p>
+              {selectedFile && (
+                <p className="text-lg text-gray-700 mb-4">Selected File: <span className="font-semibold">{selectedFile.name}</span></p>
+              )}
               <input
                 type="file"
                 accept=".jpg,.jpeg,.png"
@@ -238,7 +255,16 @@ export function ImageResizerApp({ onBack }) {
                     <Switch
                       id="lock-aspect-ratio"
                       checked={lockAspectRatio}
-                      onCheckedChange={setLockAspectRatio}
+                      onCheckedChange={(checked) => {
+                        setLockAspectRatio(checked)
+                        if (originalDimensions) {
+                          setResizeParams((prev) => ({
+                            ...prev,
+                            width: originalDimensions.width,
+                            height: originalDimensions.height,
+                          }))
+                        }
+                      }}
                       className="data-[state=checked]:bg-green-500 h-6 w-11"
                     />
                   </div>
@@ -301,7 +327,7 @@ export function ImageResizerApp({ onBack }) {
                       <Label htmlFor="height" className="text-base font-semibold text-gray-800 flex items-center">
                         <div className="w-2 h-2 bg-violet-500 rounded-full mr-2"></div>
                         Target Height
-                      </Label>
+                    </Label>
                       <div className="relative">
                         <Input
                           id="height"
@@ -331,19 +357,19 @@ export function ImageResizerApp({ onBack }) {
                             heightError 
                               ? "border-red-400 bg-red-50/50 focus:border-red-500" 
                               : "border-gray-200/80 bg-white/50 focus:border-violet-400 hover:border-gray-300"
-                          }`}
-                        />
-                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-medium">
-                          H:
-                        </div>
+                        }`}
+                      />
+                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-medium">
+                        H:
                       </div>
-                      {heightError && (
-                        <p className="text-red-500 text-sm flex items-center">
-                          <div className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></div>
-                          {heightError}
-                        </p>
-                      )}
                     </div>
+                    {heightError && (
+                      <p className="text-red-500 text-sm flex items-center">
+                        <div className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></div>
+                        {heightError}
+                      </p>
+                    )}
+                  </div>
                   )}
 
                   {/* Resize Button */}
@@ -359,11 +385,12 @@ export function ImageResizerApp({ onBack }) {
                         <>
                           <Loader2 className="mr-3 h-5 w-5 animate-spin" />
                           Processing...
+                          
                         </>
                       ) : (
                         <>
                           <Sparkles className="mr-3 h-5 w-5" />
-                          Resize Image
+                          {isResized ? "Resize Image" : "Resize Image"}
                         </>
                       )}
                     </Button>
@@ -388,7 +415,7 @@ export function ImageResizerApp({ onBack }) {
 
         {/* Preview Section */}
         {originalImage && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div ref={resizedImageRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Original Image */}
             <Card className="overflow-hidden shadow-2xl border-0 bg-white/80 backdrop-blur-sm transition-all duration-500 hover:shadow-3xl">
               <CardContent className="p-0">
