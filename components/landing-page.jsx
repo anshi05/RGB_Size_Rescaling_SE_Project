@@ -5,11 +5,42 @@ import { ArrowRight, Zap, ImageIcon, Download, Sparkles, Users, Clock, Star, Che
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
+import { AuthModal } from "@/components/auth/auth-modal"
+import { UserMenu } from "@/components/auth/user-menu"
+import { getCurrentUser } from "@/lib/auth"
+import { supabase } from "@/lib/supabase"
+import { ImageResizerApp } from "@/components/image-resizer-app"
+import { useRouter } from "next/navigation"
 
 export function LandingPage() {
   const [isVisible, setIsVisible] = useState(false)
   const [activeFeature, setActiveFeature] = useState(0)
+  const [user, setUser] = useState(null)
+  const [showAuth, setShowAuth] = useState(false)
   const featuresRef = useRef(null)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+
+
+  useEffect(() => {
+    // Check for existing session
+    getCurrentUser().then(({ user }) => {
+      setUser(user)
+      setLoading(false)
+    })
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setUser(session?.user ?? null)
+      if (event === "SIGNED_IN") {
+        setShowAuth(false)
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   useEffect(() => {
     setIsVisible(true)
@@ -53,6 +84,24 @@ export function LandingPage() {
       gradient: "from-orange-400 to-rose-400"
     }
   ]
+
+  const handleLaunchApp = () => {
+    if (user) {
+      router.push('/resizer')
+    } else {
+      setShowAuth(true)
+    }
+  }
+
+  const handleAuthSuccess = () => {
+    setShowAuth(false)
+    router.push('/resizer')
+  }
+
+  const handleSignOut = () => {
+    setUser(null)
+    router.push('/') // Redirect to home page after sign out
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-900 via-purple-900 to-violet-900 relative overflow-hidden">
@@ -101,14 +150,25 @@ export function LandingPage() {
               PixelPerfect
             </span>
           </div>
-          <Link href="/resizer">
-            <Button
-              className="bg-white/10 backdrop-blur-lg border border-white/20 text-white hover:bg-white/20 hover:scale-105 hover:shadow-2xl hover:shadow-white/10 transition-all duration-300 group px-8 py-2"
-            >
-              Launch App
-              <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
+          
+          {loading ? (
+            <div className="w-24 h-10 bg-white/10 rounded-lg animate-pulse" />
+          ) : user ? (
+            <UserMenu user={user} onSignOut={handleSignOut} />
+          ) : (
+            <div className="flex items-center space-x-3">
+              <Button onClick={() => setShowAuth(true)} variant="ghost" className="text-white hover:bg-white/10">
+                Sign In
+              </Button>
+              <Button
+                onClick={handleLaunchApp}
+                className="bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-all duration-300"
+              >
+                Launch App
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -121,9 +181,10 @@ export function LandingPage() {
           </div>
 
           <h1 className={`text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-8 leading-tight transform transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-            Resize Images
-            <span className="block bg-gradient-to-r from-rose-400 via-pink-400 to-orange-400 bg-clip-text text-transparent animate-gradient">
-              With Precision
+            Resize Images With
+            <span className="bg-gradient-to-r from-rose-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
+            {" "}              
+            Pixel Precision
             </span>
           </h1>
 
@@ -132,8 +193,9 @@ export function LandingPage() {
           </p>
 
           <div className={`flex flex-col sm:flex-row gap-6 justify-center items-center transform transition-all duration-700 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-            <Link href="/resizer">
+            
               <Button
+                onClick={handleLaunchApp}
                 size="lg"
                 className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-10 py-6 text-lg font-semibold shadow-2xl hover:shadow-rose-500/40 transition-all duration-300 transform hover:scale-105 group relative overflow-hidden"
               >
@@ -141,7 +203,7 @@ export function LandingPage() {
                 Start Resizing Now
                 <Zap className="ml-3 h-5 w-5 transform group-hover:scale-125 transition-transform" />
               </Button>
-            </Link>
+           
             <Button
               variant="outline"
               size="lg"
@@ -151,6 +213,11 @@ export function LandingPage() {
               <ChevronDown className="ml-3 h-5 w-5 transform group-hover:translate-y-1 transition-transform" />
             </Button>
           </div>
+
+          {!user && (
+            <p className="text-white/60 text-sm mt-4">No credit card required • Free forever • Sign up in seconds</p>
+          )}
+
         </div>
       </section>
 
@@ -244,16 +311,14 @@ export function LandingPage() {
             <p className="text-white/80 text-xl mb-10 relative z-10 max-w-2xl mx-auto">
               Join thousands of creative professionals who trust PixelPerfect for their image resizing needs.
             </p>
-            <Link href="/resizer">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-12 py-6 text-lg font-semibold shadow-2xl hover:shadow-rose-500/40 transition-all duration-300 transform hover:scale-105 group relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                Launch PixelPerfect
-                <ArrowRight className="ml-3 h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
+            <Button
+              onClick={handleLaunchApp}
+              size="lg"
+              className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-12 py-4 text-lg font-semibold shadow-2xl hover:shadow-rose-500/25 transition-all duration-300 transform hover:scale-105"
+            >
+              {user ? "Launch PixelPerfect" : "Start Free Today"}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
           </div>
         </div>
       </section>
@@ -272,6 +337,8 @@ export function LandingPage() {
           </p>
         </div>
       </footer>
+      
+      <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} onSuccess={handleAuthSuccess} />
 
       <style jsx>{`
         @keyframes pan {
