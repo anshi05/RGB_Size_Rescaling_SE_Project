@@ -1,17 +1,63 @@
 "use client"
 
-import { useState } from "react"
-import { ArrowRight, Zap, ImageIcon, Download, Sparkles, Users, Clock } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+import { ArrowRight, Zap, ImageIcon, Download, Sparkles, Users, Clock, Star, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ImageResizerApp } from "@/components/image-resizer-app"
 
 export function LandingPage() {
   const [showApp, setShowApp] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+  const [activeFeature, setActiveFeature] = useState(0)
+  const featuresRef = useRef(null)
+
+  useEffect(() => {
+    setIsVisible(true)
+    
+    // Intersection Observer for feature cards
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.getAttribute('data-index'))
+            setActiveFeature(index)
+          }
+        })
+      },
+      { threshold: 0.7 }
+    )
+
+    const featureCards = document.querySelectorAll('.feature-card')
+    featureCards.forEach(card => observer.observe(card))
+
+    return () => observer.disconnect()
+  }, [])
 
   if (showApp) {
     return <ImageResizerApp onBack={() => setShowApp(false)} />
   }
+
+  const features = [
+    {
+      icon: Zap,
+      title: "Lightning Fast",
+      desc: "Process images instantly with our optimized algorithms. No waiting, no delays. Experience real-time processing that keeps up with your creative flow.",
+      gradient: "from-rose-400 to-pink-400"
+    },
+    {
+      icon: ImageIcon,
+      title: "Multiple Methods",
+      desc: "Choose from nearest-neighbor, bilinear, or bicubic interpolation for perfect results. Professional-grade algorithms for every use case.",
+      gradient: "from-violet-400 to-purple-400"
+    },
+    {
+      icon: Download,
+      title: "Easy Export",
+      desc: "Download your resized images instantly in high quality PNG format. Batch processing available for multiple images at once.",
+      gradient: "from-orange-400 to-rose-400"
+    }
+  ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-900 via-purple-900 to-violet-900 relative overflow-hidden">
@@ -20,171 +66,252 @@ export function LandingPage() {
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-pink-500 to-rose-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-violet-500 to-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
         <div className="absolute top-40 left-40 w-80 h-80 bg-gradient-to-r from-orange-500 to-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+      </div>
+
+      {/* Enhanced Background */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Animated Gradient Orbs */}
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gradient-to-r from-rose-500/30 to-pink-500/30 rounded-full blur-3xl animate-float-slow"></div>
+        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-gradient-to-r from-violet-500/30 to-purple-500/30 rounded-full blur-3xl animate-float-medium"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-orange-500/20 to-rose-500/20 rounded-full blur-3xl animate-pulse-slow"></div>
+        
+        {/* Geometric Patterns */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-10 w-2 h-2 bg-white rounded-full animate-bounce"></div>
+          <div className="absolute top-40 right-20 w-1 h-1 bg-white rounded-full animate-bounce delay-300"></div>
+          <div className="absolute bottom-32 left-1/4 w-3 h-3 bg-rose-300 rounded-full animate-bounce delay-700"></div>
+          <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-violet-300 rounded-full animate-bounce delay-1000"></div>
+        </div>
+
+        {/* Animated Grid */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="w-full h-full opacity-4 z-[-2]" 
+            style={{
+              backgroundImage: `linear-gradient(to right, white 1px, transparent 1px),
+                               linear-gradient(to bottom, white 1px, transparent 1px)`,
+              backgroundSize: '100px 100px',
+            }}
+          ></div>
+        </div>
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-10 px-6 py-4">
+      <nav className={`relative z-20 px-6 py-6 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-pink-400 rounded-lg flex items-center justify-center">
-              <ImageIcon className="w-5 h-5 text-white" />
+          <div className="flex items-center space-x-3 group cursor-pointer">
+            <div className="w-12 h-12 bg-gradient-to-r from-rose-400 to-pink-400 rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-all duration-300 shadow-lg shadow-rose-500/30">
+              <ImageIcon className="w-7 h-7 text-white" />
             </div>
-            <span className="text-white font-bold text-xl">PixelPerfect</span>
+            <span className="text-white font-bold text-2xl bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+              PixelPerfect
+            </span>
           </div>
           <Button
             onClick={() => setShowApp(true)}
-            className="bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-all duration-300"
+            className="bg-white/10 backdrop-blur-lg border border-white/20 text-white hover:bg-white/20 hover:scale-105 hover:shadow-2xl hover:shadow-white/10 transition-all duration-300 group px-8 py-2"
           >
             Launch App
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
           </Button>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 px-6 py-20">
+      <section className="relative z-10 px-6 py-20 lg:py-32">
         <div className="max-w-7xl mx-auto text-center">
-          <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-white/90 text-sm mb-8">
-            <Sparkles className="w-4 h-4 mr-2" />
+          <div className={`inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-lg rounded-full border border-white/20 text-white/90 text-base mb-8 transform transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+            <Sparkles className="w-5 h-5 mr-2 animate-pulse" />
             Professional Image Resizing Made Simple
           </div>
 
-          <h1 className="text-6xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            Resize Images with
-            <span className="bg-gradient-to-r from-rose-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
-              {" "}
-              Pixel Precision
+          <h1 className={`text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-8 leading-tight transform transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+            Resize Images
+            <span className="block bg-gradient-to-r from-rose-400 via-pink-400 to-orange-400 bg-clip-text text-transparent animate-gradient">
+              With Precision
             </span>
           </h1>
 
-          <p className="text-xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Transform your images with advanced interpolation algorithms. Choose from nearest-neighbor, bilinear, or
-            bicubic methods for perfect results every time.
+          <p className={`text-xl md:text-2xl text-white/80 mb-12 max-w-4xl mx-auto leading-relaxed transform transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+            Transform your images with advanced interpolation algorithms. Choose from multiple professional methods for perfect results every time.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className={`flex flex-col sm:flex-row gap-6 justify-center items-center transform transition-all duration-700 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
             <Button
               onClick={() => setShowApp(true)}
               size="lg"
-              className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-8 py-4 text-lg font-semibold shadow-2xl hover:shadow-rose-500/25 transition-all duration-300 transform hover:scale-105"
+              className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-10 py-6 text-lg font-semibold shadow-2xl hover:shadow-rose-500/40 transition-all duration-300 transform hover:scale-105 group relative overflow-hidden"
             >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               Start Resizing Now
-              <Zap className="ml-2 h-5 w-5" />
+              <Zap className="ml-3 h-5 w-5 transform group-hover:scale-125 transition-transform" />
             </Button>
             <Button
               variant="outline"
               size="lg"
-              className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm px-8 py-4 text-lg bg-transparent"
+              className="border-white/30 text-white hover:bg-white/10 backdrop-blur-lg px-10 py-6 text-lg bg-transparent hover:scale-105 transition-all duration-300 group"
             >
               View Demo
+              <ChevronDown className="ml-3 h-5 w-5 transform group-hover:translate-y-1 transition-transform" />
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="relative z-10 px-6 py-20">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Powerful Features</h2>
-            <p className="text-white/70 text-lg">Everything you need for professional image resizing</p>
+      {/* Features Section with Scroll Effect */}
+      <section ref={featuresRef} className="relative z-10 py-20 lg:py-32 min-h-screen flex items-center">
+        <div className="max-w-7xl mx-auto w-full px-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+              Powerful Features
+            </h2>
+            <p className="text-white/70 text-xl max-w-2xl mx-auto">
+              Scroll to discover what makes PixelPerfect exceptional
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/15 transition-all duration-300 transform hover:scale-105">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-rose-400 to-pink-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Zap className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-4">Lightning Fast</h3>
-                <p className="text-white/70">
-                  Process images instantly with our optimized algorithms. No waiting, no delays.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/15 transition-all duration-300 transform hover:scale-105">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-violet-400 to-purple-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <ImageIcon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-4">Multiple Methods</h3>
-                <p className="text-white/70">
-                  Choose from nearest-neighbor, bilinear, or bicubic interpolation for perfect results.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/15 transition-all duration-300 transform hover:scale-105">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-orange-400 to-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Download className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-4">Easy Export</h3>
-                <p className="text-white/70">Download your resized images instantly in high quality PNG format.</p>
-              </CardContent>
-            </Card>
+          <div className="space-y- lg:space-y-12 max-w-8xl mx-auto">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                data-index={index}
+                className={`feature-card transition-all duration-1000 ease-out ${
+                  activeFeature === index 
+                    ? 'opacity-100 transform translate-y-0 scale-100' 
+                    : 'opacity-40 transform translate-y-10 scale-95'
+                }`}
+              >
+                <Card className="bg-white/10 backdrop-blur-lg border border-white/20 hover:border-white/40 transition-all duration-500 overflow-hidden group cursor-pointer">
+                  <CardContent className="p-8 lg:p-12">
+                    <div className="flex flex-col lg:flex-row items-center gap-8">
+                      <div className={`w-24 h-24 lg:w-32 lg:h-32 bg-gradient-to-r ${feature.gradient} rounded-3xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-2xl`}>
+                        <feature.icon className="w-12 h-12 lg:w-16 lg:h-16 text-white" />
+                      </div>
+                      <div className="flex-1 text-center lg:text-left">
+                        <div className="inline-flex items-center px-4 py-2 bg-white/10 rounded-full mb-4">
+                          <span className="text-white/80 text-sm font-semibold">
+                            Feature {index + 1}
+                          </span>
+                        </div>
+                        <h3 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+                          {feature.title}
+                        </h3>
+                        <p className="text-white/70 text-lg lg:text-xl leading-relaxed">
+                          {feature.desc}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="relative z-10 px-6 py-16">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative z-10 py-20">
+        <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-              <div className="flex items-center justify-center mb-4">
-                <Users className="w-8 h-8 text-rose-400 mr-2" />
-                <span className="text-4xl font-bold text-white">10K+</span>
+            {[
+              { icon: Users, value: "10K+", label: "Happy Users", color: "text-rose-400" },
+              { icon: ImageIcon, value: "1M+", label: "Images Processed", color: "text-violet-400" },
+              { icon: Clock, value: "<1s", label: "Average Process Time", color: "text-orange-400" }
+            ].map((stat, index) => (
+              <div 
+                key={index}
+                className="bg-white/5 backdrop-blur-lg rounded-3xl p-12 border border-white/10 hover:bg-white/10 hover:scale-105 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 group"
+              >
+                <div className="flex items-center justify-center mb-6">
+                  <stat.icon className={`w-12 h-12 ${stat.color} mr-4 transform group-hover:scale-110 transition-transform`} />
+                  <span className="text-5xl font-bold text-white transform group-hover:scale-110 transition-transform">
+                    {stat.value}
+                  </span>
+                </div>
+                <p className="text-white/70 text-lg font-medium">{stat.label}</p>
               </div>
-              <p className="text-white/70">Happy Users</p>
-            </div>
-
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-              <div className="flex items-center justify-center mb-4">
-                <ImageIcon className="w-8 h-8 text-violet-400 mr-2" />
-                <span className="text-4xl font-bold text-white">1M+</span>
-              </div>
-              <p className="text-white/70">Images Processed</p>
-            </div>
-
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-              <div className="flex items-center justify-center mb-4">
-                <Clock className="w-8 h-8 text-orange-400 mr-2" />
-                <span className="text-4xl font-bold text-white">{"<1s"}</span>
-              </div>
-              <p className="text-white/70">Average Process Time</p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="relative z-10 px-6 py-20">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-rose-500/20 to-violet-500/20 backdrop-blur-sm rounded-3xl p-12 border border-white/20">
-            <h2 className="text-4xl font-bold text-white mb-6">Ready to Get Started?</h2>
-            <p className="text-white/80 text-lg mb-8">
-              Join thousands of users who trust PixelPerfect for their image resizing needs.
+      <section className="relative z-10 py-20 lg:py-32">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="bg-gradient-to-r from-rose-500/20 to-violet-500/20 backdrop-blur-lg rounded-3xl p-12 lg:p-16 border border-white/20 relative overflow-hidden">
+            <div className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-r from-rose-400/20 to-pink-400/20 rounded-full blur-3xl animate-float-slow"></div>
+            <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-gradient-to-r from-violet-400/20 to-purple-400/20 rounded-full blur-3xl animate-float-medium"></div>
+            
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6 relative z-10">
+              Ready to Transform Your Images?
+            </h2>
+            <p className="text-white/80 text-xl mb-10 relative z-10 max-w-2xl mx-auto">
+              Join thousands of creative professionals who trust PixelPerfect for their image resizing needs.
             </p>
             <Button
               onClick={() => setShowApp(true)}
               size="lg"
-              className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-12 py-4 text-lg font-semibold shadow-2xl hover:shadow-rose-500/25 transition-all duration-300 transform hover:scale-105"
+              className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-12 py-6 text-lg font-semibold shadow-2xl hover:shadow-rose-500/40 transition-all duration-300 transform hover:scale-105 group relative overflow-hidden"
             >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               Launch PixelPerfect
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <ArrowRight className="ml-3 h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 px-6 py-8 border-t border-white/10">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-white/60">© 2024 PixelPerfect. Made with ❤️ for image enthusiasts.</p>
+      <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-lg">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <div className="flex items-center justify-center space-x-3 mb-4">
+            <div className="w-10 h-10 bg-gradient-to-r from-rose-400 to-pink-400 rounded-lg flex items-center justify-center">
+              <ImageIcon className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-white font-bold text-2xl">PixelPerfect</span>
+          </div>
+          <p className="text-white/60 text-lg">
+            © 2024 PixelPerfect. Crafted with passion for creators worldwide.
+          </p>
         </div>
       </footer>
+
+      <style jsx>{`
+        @keyframes pan {
+          from {
+            transform: translateX(0%) translateY(0%);
+          }
+          to {
+            transform: translateX(-10%) translateY(-10%);
+          }
+        }
+        
+        @keyframes float-slow {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        @keyframes float-medium {
+          0%, 100% { transform: translateX(0px) translateY(0px); }
+          50% { transform: translateX(10px) translateY(-15px); }
+        }
+        
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 0.3; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.1); }
+        }
+        
+        .animate-float-slow {
+          animation: float-slow 8s ease-in-out infinite;
+        }
+        
+        .animate-float-medium {
+          animation: float-medium 6s ease-in-out infinite;
+        }
+        
+        .animate-pulse-slow {
+          animation: pulse-slow 4s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   )
 }
