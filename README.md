@@ -1,4 +1,4 @@
-# RGB Image Rescaler
+# RGB Image Size Rescaling
 
 This project is a web application for processing RGB images, specifically designed for efficient client-side image resizing using various algorithms.
 
@@ -18,10 +18,11 @@ Make sure you have the following installed:
 Create a `.env.local` file in the root of the project with the following Supabase credentials:
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+NEXT_PUBLIC_SUPABASE_URL=https://wfxjsovjjcclnwagwjei.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmeGpzb3ZqamNjbG53YWd3amVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzNTE2MTksImV4cCI6MjA3NTkyNzYxOX0.DVnJ0JRvScN7PWoWMedy1PV6pRymS9LysBnXZ7XcrJU
 ```
-Replace `YOUR_SUPABASE_URL` and `YOUR_SUPABASE_ANON_KEY` with your actual Supabase project URL and anonymous key.
+
+
 
 ### Installation
 
@@ -56,10 +57,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 *   Tailwind CSS
 *   Shadcn UI
 
-## Features
-
-*   Client-side image resizing using multiple algorithms
-*   (More features to be added)
 
 ## Image Resizing Algorithms
 
@@ -85,5 +82,7 @@ Bicubic interpolation is a more sophisticated method that considers 16 (4x4) sur
 
 ## Work Left
 
-*   Connecting to Supabase to store resized images.
+*   Storing resized images in supabase.
+
+  
 
