@@ -13,17 +13,6 @@ Make sure you have the following installed:
 *   Node.js (v18 or later)
 *   pnpm (or npm/yarn)
 
-### Environment Variables
-
-Create a `.env.local` file in the root of the project with the following Supabase credentials:
-
-```
-NEXT_PUBLIC_SUPABASE_URL=https://wfxjsovjjcclnwagwjei.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmeGpzb3ZqamNjbG53YWd3amVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzNTE2MTksImV4cCI6MjA3NTkyNzYxOX0.DVnJ0JRvScN7PWoWMedy1PV6pRymS9LysBnXZ7XcrJU
-```
-
-
-
 ### Installation
 
 1.  Clone the repository:
@@ -34,7 +23,16 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzd
 
     ```
 
-2.  Install dependencies using pnpm:
+2.  **Configure Environment Variables**
+
+    Create a `.env.local` file in the root of the project with the following Supabase credentials:
+
+    ```
+    NEXT_PUBLIC_SUPABASE_URL=https://wfxjsovjjcclnwagwjei.supabase.co
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmeGpzb3ZqamNjbG53YWd3amVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzNTE2MTksImV4cCI6MjA3NTkyNzYxOX0.DVnJ0JRvScN7PWoWMedy1PV6pRymS9LysBnXZ7XcrJU
+    ```
+
+3.  Install dependencies using pnpm:
 
     ```bash
     pnpm install
