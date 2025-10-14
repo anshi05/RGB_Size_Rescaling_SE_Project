@@ -50,6 +50,17 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. The application leverages Next.js for server-side rendering and API routes, though image processing is handled client-side for performance.
 
+## Login Credentials (for testing)
+
+*   **Email:** `anshijio123@gmail.com`
+*   **Password:** `Anshi.`
+
+You can singup using your own email also, and then login from that.
+
+## Sample Image for Testing
+
+For testing the image resizing functionality, you can use the `public/test_image.jpg` image available in the project.
+
 ## Technologies Used
 
 *   Next.js
