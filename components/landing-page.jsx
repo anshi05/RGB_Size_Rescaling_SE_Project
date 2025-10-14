@@ -173,51 +173,43 @@ export function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 px-6 py-20 lg:py-32">
+      <section className="relative z-10 px-6 py-24 ">
         <div className="max-w-7xl mx-auto text-center">
-          <div className={`inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-lg rounded-full border border-white/20 text-white/90 text-base mb-8 transform transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-            <Sparkles className="w-5 h-5 mr-2 animate-pulse" />
-            Professional Image Resizing Made Simple
+          {/* College Project Title and Details */}
+          <div className="pb-8 text-white/90">
+            <p className="text-xl md:text-2xl font-semibold mb-6">
+              SOFTWARE ENGINEERING (IT303) COURSE PROJECT
+            </p>
+            <h1 className="text-8xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-rose-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
+            Implementation of RGB Image Size Rescaling 
+            Technique
+            </h1>
+            <p className="text-lg md:text-xl mb-2">
+              Carried out by
+            </p>
+            <p className="text-lg md:text-xl">Anshi Sachan (231IT008)</p>
+            <p className="text-lg md:text-xl">Harsh Revar (231IT055)</p>
+            <p className="text-lg md:text-xl">Sameer Jamkhandi (231IT058)</p>
           </div>
-
-          <h1 className={`text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-8 leading-tight transform transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-            Resize Images With
-            <span className="bg-gradient-to-r from-rose-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
-            {" "}              
-            Pixel Precision
-            </span>
-          </h1>
-
-          <p className={`text-xl md:text-2xl text-white/80 mb-12 max-w-4xl mx-auto leading-relaxed transform transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-            Transform your images with advanced interpolation algorithms. Choose from multiple professional methods for perfect results every time.
-          </p>
 
           <div className={`flex flex-col sm:flex-row gap-6 justify-center items-center transform transition-all duration-700 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
             
-              <Button
-                onClick={handleLaunchApp}
-                size="lg"
-                className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-10 py-6 text-lg font-semibold shadow-2xl hover:shadow-rose-500/40 transition-all duration-300 transform hover:scale-105 group relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                Start Resizing Now
-                <Zap className="ml-3 h-5 w-5 transform group-hover:scale-125 transition-transform" />
-              </Button>
-           
             <Button
-              variant="outline"
+              onClick={handleLaunchApp}
               size="lg"
-              className="border-white/30 text-white hover:bg-white/10 backdrop-blur-lg px-10 py-6 text-lg bg-transparent hover:scale-105 transition-all duration-300 group"
+              className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-10 py-6 text-lg font-semibold shadow-2xl hover:shadow-rose-500/40 transition-all duration-300 transform hover:scale-105 group relative overflow-hidden mt-4"
             >
-              View Demo
-              <ChevronDown className="ml-3 h-5 w-5 transform group-hover:translate-y-1 transition-transform" />
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+              Start Resizing Now
+              <Zap className="ml-3 h-5 w-5 transform group-hover:scale-125 transition-transform" />
             </Button>
-          </div>
+         
+         
+        </div>
 
-          {!user && (
-            <p className="text-white/60 text-sm mt-4">No credit card required • Free forever • Sign up in seconds</p>
-          )}
-
+        {!user && (
+          <p className="text-white/60 text-sm mt-4">No credit card required • Free forever • Sign up in seconds</p>
+        )}
         </div>
       </section>
 
@@ -272,31 +264,8 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="relative z-10 py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            {[
-              { icon: Users, value: "10K+", label: "Happy Users", color: "text-rose-400" },
-              { icon: ImageIcon, value: "1M+", label: "Images Processed", color: "text-violet-400" },
-              { icon: Clock, value: "<1s", label: "Average Process Time", color: "text-orange-400" }
-            ].map((stat, index) => (
-              <div 
-                key={index}
-                className="bg-white/5 backdrop-blur-lg rounded-3xl p-12 border border-white/10 hover:bg-white/10 hover:scale-105 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 group"
-              >
-                <div className="flex items-center justify-center mb-6">
-                  <stat.icon className={`w-12 h-12 ${stat.color} mr-4 transform group-hover:scale-110 transition-transform`} />
-                  <span className="text-5xl font-bold text-white transform group-hover:scale-110 transition-transform">
-                    {stat.value}
-                  </span>
-                </div>
-                <p className="text-white/70 text-lg font-medium">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+  
+     
 
       {/* CTA Section */}
       <section className="relative z-10 py-20 lg:py-32">
@@ -332,9 +301,7 @@ export function LandingPage() {
             </div>
             <span className="text-white font-bold text-2xl">PixelPerfect</span>
           </div>
-          <p className="text-white/60 text-lg">
-            © 2024 PixelPerfect. Crafted with passion for creators worldwide.
-          </p>
+
         </div>
       </footer>
       

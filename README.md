@@ -13,6 +13,16 @@ Make sure you have the following installed:
 *   Node.js (v18 or later)
 *   pnpm (or npm/yarn)
 
+### Environment Variables
+
+Create a `.env.local` file in the root of the project with the following Supabase credentials:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+```
+Replace `YOUR_SUPABASE_URL` and `YOUR_SUPABASE_ANON_KEY` with your actual Supabase project URL and anonymous key.
+
 ### Installation
 
 1.  Clone the repository:
@@ -69,12 +79,11 @@ Bicubic interpolation is a more sophisticated method that considers 16 (4x4) sur
 
 ## Contributions
 
-*   **Anshi Sachan (231IT008):** Designed the UI landing page and implemented the nearest-neighbor interpolation technique.
+*   **Anshi Sachan (231IT008):** Designed the web page UI, implemented the nearest-neighbor interpolation technique, and added user authentication with Supabase integration.
 *   **Harsh Revar (231IT055):** Implemented image upload and validation, and the bilinear interpolation technique.
 *   **Sameer Jamkhandi (231IT058):** Implemented the bicubic interpolation technique, preview functionality for both original and resized images, and the download functionality for resized images.
 
 ## Work Left
 
-*   Adding authentication.
 *   Connecting to Supabase to store resized images.
 
