@@ -1,3 +1,9 @@
+/**
+ * @file app/my_images/page.jsx
+ * @author Anshi
+ * @description Displays a user's history of resized images, including original and resized versions, and resizing details.
+ * @lastUpdated 2025-10-21
+ */
 'use client'
 
 import { useState, useEffect, useCallback } from 'react';
@@ -9,7 +15,17 @@ import { ArrowLeft, Loader2, Image as ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from "@/hooks/use-toast";
 import { ImageModal } from "@/components/image-modal";
+import { handleImageDownload } from "@/lib/image-actions/handleImageDownload";
+import { Download } from "lucide-react";
 
+/**
+ * @overview MyImagesPage component fetches and displays the authenticated user's image resizing history.
+ * It retrieves original and resized image URLs, file names, timestamps, and interpolation methods
+ * from Supabase, allowing users to view a gallery of their past resizing operations.
+ * Users can also click on images to open a larger preview modal.
+ * 
+ * @returns {JSX.Element} The image history page, displaying a list of resized images or a message if none are found.
+ */
 export default function MyImagesPage() {
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState([]);
@@ -159,7 +175,6 @@ export default function MyImagesPage() {
                       </button>
                     </div>
                   </div>
-                  {/* Add download button or view original/resized in full size */}
                 </CardContent>
               </Card>
             ))}

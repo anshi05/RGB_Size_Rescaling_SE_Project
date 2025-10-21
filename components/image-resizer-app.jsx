@@ -157,7 +157,9 @@ export function ImageResizerApp({ onBack, session }) {
             resized_img: resizedImageUrl, 
             file_name: fileName, 
             created_at: timestamp,
-            interpolation_method: resizeParams.method
+            interpolation_method: resizeParams.method,
+            resized_width: resizeParams.width,
+            resized_height: resizeParams.height
           }
         ]);
 

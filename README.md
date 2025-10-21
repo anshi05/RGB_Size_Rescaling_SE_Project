@@ -85,13 +85,10 @@ Bicubic interpolation is a more sophisticated method that considers 16 (4x4) sur
 
 ## Contributions
 
-*   **Anshi Sachan (231IT008):** Designed the web page UI, implemented the nearest-neighbor interpolation technique, and added user authentication with Supabase integration.
+*   **Anshi Sachan (231IT008):** Designed the web page UI, implemented the nearest-neighbor interpolation technique, and added user authentication with Supabase integration. Added storing resized images in supabase feature.
 *   **Harsh Revar (231IT055):** Implemented image upload and validation, and the bilinear interpolation technique.
 *   **Sameer Jamkhandi (231IT058):** Implemented the bicubic interpolation technique, preview functionality for both original and resized images, and the download functionality for resized images.
 
-## Work Left
-
-*   Storing resized images in supabase.
 
   
 
