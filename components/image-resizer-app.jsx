@@ -20,6 +20,8 @@ import { ImageProcessor } from "@/components/image-processor"
 import { ImageModal } from "@/components/image-modal"
 import { useImageUploader } from "../lib/image-actions/handleFileUpload";
 import { handleImageDownload } from "../lib/image-actions/handleImageDownload";
+import { supabase } from "../lib/supabase";
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * @overview ImageResizerApp is the main application component for the RGB Image Rescaler.
@@ -32,7 +34,7 @@ import { handleImageDownload } from "../lib/image-actions/handleImageDownload";
  * 
  * @returns {JSX.Element} The main application interface for image resizing.
  */
-export function ImageResizerApp({ onBack }) {
+export function ImageResizerApp({ onBack, session }) {
   // State variables for managing image data, UI states, and resize parameters
   const [originalImage, setOriginalImage] = useState(null)
   const [resizedImage, setResizedImage] = useState(null)
@@ -53,6 +55,8 @@ export function ImageResizerApp({ onBack }) {
   const [heightError, setHeightError] = useState("")
   const resizedImageRef = useRef(null) // Ref for scrolling to resized image
   const [isResized, setIsResized] = useState(false) // State to track if an image has been resized
+
+  const { toast } = useToast();
 
   // Custom hook for handling image uploads, including file input and drag-and-drop
   const { handleFile, handleFileInput, handleDrag, handleDrop } = useImageUploader(
@@ -89,6 +93,10 @@ export function ImageResizerApp({ onBack }) {
       // Create a URL for the resized image blob and update state
       const resizedImageUrl = URL.createObjectURL(resizedBlob)
       setResizedImage(resizedImageUrl)
+
+      const originalImageBlob = await fetch(originalImage).then((res) => res.blob());
+      await saveImageHistory(originalImageBlob, resizedBlob, selectedFile.name);
+
     } catch (error) {
       console.error("Error resizing image:", error)
       alert("Failed to resize image. Please try again.")
@@ -101,10 +109,74 @@ export function ImageResizerApp({ onBack }) {
         if (resizedImageRef.current) {
           resizedImageRef.current.scrollIntoView({ behavior: "smooth", block: "center" })
         }
-      }, 500) // Minimum 500ms processing time
+      }, 100) // Minimum 100ms processing time
     }
     
   }
+
+  const saveImageHistory = async (originalBlob, resizedBlob, fileName) => {
+    try {
+      if (!session?.user) {
+        console.error("User not authenticated.");
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to save image history.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const userId = session.user.id;
+      const timestamp = new Date().toISOString();
+
+      // Upload original image
+      const { data: originalUploadData, error: originalUploadError } = await supabase.storage
+        .from('image_history')
+        .upload(`${userId}/original_${timestamp}_${fileName}`, originalBlob, { contentType: originalBlob.type });
+
+      if (originalUploadError) throw originalUploadError;
+
+      const originalImageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/image_history/${originalUploadData.path}`;
+
+      // Upload resized image
+      const { data: resizedUploadData, error: resizedUploadError } = await supabase.storage
+        .from('image_history')
+        .upload(`${userId}/resized_${timestamp}_${fileName}`, resizedBlob, { contentType: resizedBlob.type });
+
+      if (resizedUploadError) throw resizedUploadError;
+
+      const resizedImageUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/image_history/${resizedUploadData.path}`;
+
+      // Insert into images_history table
+      const { error: insertError } = await supabase
+        .from('images_history')
+        .insert([
+          { 
+            user_id: userId, 
+            original_img: originalImageUrl, 
+            resized_img: resizedImageUrl, 
+            file_name: fileName, 
+            created_at: timestamp,
+            interpolation_method: resizeParams.method
+          }
+        ]);
+
+      if (insertError) throw insertError;
+
+      toast({
+        title: "Image History Saved",
+        description: "Original and resized images saved successfully.",
+      });
+
+    } catch (error) {
+      console.error("Error saving image history:", error);
+      toast({
+        title: "Error",
+        description: `Failed to save image history: ${error.message}`,
+        variant: "destructive",
+      });
+    }
+  };
 
   /**
    * @overview Initiates the download of the resized image. It calls the `handleImageDownload`
@@ -338,37 +410,54 @@ export function ImageResizerApp({ onBack }) {
                       Target Width
                     </Label>
                     <div className="relative">
-                      <Input
-                        id="width"
-                        type="number"
-                        min="1"
-                        max="4096"
-                        value={resizeParams.width}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          const newWidth = Number.parseInt(value);
-                          if (value === "") {
-                            setWidthError("Width cannot be empty.");
-                            setResizeParams((prev) => ({ ...prev, width: "" }));
-                          } else if (isNaN(newWidth) || newWidth < 1) {
-                            setWidthError("Please enter a valid width (min 1).");
-                            setResizeParams((prev) => ({ ...prev, width: value }));
-                          } else {
-                            setWidthError("");
-                            setResizeParams((prev) => ({
-                              ...prev,
-                              width: newWidth,
-                              // Adjust height to maintain aspect ratio if locked
-                              height: lockAspectRatio ? Math.round(newWidth / aspectRatio) : prev.height,
-                            }))
-                          }
-                        }}
-                        className={`h-14 border-2 rounded-xl text-base pl-12 transition-all duration-300 ${
-                          widthError 
-                            ? "border-red-400 bg-red-50/50 focus:border-red-500" 
-                            : "border-gray-200/80 bg-white/50 focus:border-rose-400 hover:border-gray-300"
-                        }`}
-                      />
+                    {/* Width Input */}
+                    <Input
+                      id="width"
+                      type="text" // changed to text to allow detection of invalid chars
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={resizeParams.width}
+                      onChange={(e) => {
+                        const value = e.target.value.trim();
+
+                        // check for empty
+                        if (value === "") {
+                          setWidthError("Width cannot be empty.");
+                          setResizeParams((prev) => ({ ...prev, width: "" }));
+                          return;
+                        }
+
+                        // check for non-digit characters
+                        if (!/^\d+$/.test(value)) {
+                          setWidthError("Please enter a valid width (digits only).");
+                          setResizeParams((prev) => ({ ...prev, width: value }));
+                          return;
+                        }
+
+                        const newWidth = Number(value);
+
+                        // check for numeric validity
+                        if (isNaN(newWidth) || newWidth < 1) {
+                          setWidthError("Please enter a valid width (min 1).");
+                          setResizeParams((prev) => ({ ...prev, width: value }));
+                          return;
+                        }
+
+                        // all good
+                        setWidthError("");
+                        setResizeParams((prev) => ({
+                          ...prev,
+                          width: newWidth,
+                          height: lockAspectRatio ? Math.round(newWidth / aspectRatio) : prev.height,
+                        }));
+                      }}
+                      className={`h-14 border-2 rounded-xl text-base pl-12 transition-all duration-300 ${
+                        widthError
+                          ? "border-red-400 bg-red-50/50 focus:border-red-500"
+                          : "border-gray-200/80 bg-white/50 focus:border-rose-400 hover:border-gray-300"
+                      }`}
+                    />
+
                       <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-medium">
                         W:
                       </div>
@@ -390,37 +479,50 @@ export function ImageResizerApp({ onBack }) {
                         Target Height
                     </Label>
                       <div className="relative">
+                        {/* Height Input */}
                         <Input
                           id="height"
-                          type="number"
-                          min="1"
-                          max="4096"
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           value={resizeParams.height}
                           onChange={(e) => {
-                            const value = e.target.value;
-                            const newHeight = Number.parseInt(value);
+                            const value = e.target.value.trim();
+
                             if (value === "") {
                               setHeightError("Height cannot be empty.");
                               setResizeParams((prev) => ({ ...prev, height: "" }));
-                            } else if (isNaN(newHeight) || newHeight < 1) {
+                              return;
+                            }
+
+                            if (!/^\d+$/.test(value)) {
+                              setHeightError("Please enter a valid height (digits only).");
+                              setResizeParams((prev) => ({ ...prev, height: value }));
+                              return;
+                            }
+
+                            const newHeight = Number(value);
+
+                            if (isNaN(newHeight) || newHeight < 1) {
                               setHeightError("Please enter a valid height (min 1).");
                               setResizeParams((prev) => ({ ...prev, height: value }));
-                            } else {
-                              setHeightError("");
-                              setResizeParams((prev) => ({
-                                ...prev,
-                                height: newHeight,
-                                // Adjust width to maintain aspect ratio if locked (though this input is hidden if locked)
-                                width: lockAspectRatio ? Math.round(newHeight * aspectRatio) : prev.width,
-                              }))
+                              return;
                             }
+
+                            setHeightError("");
+                            setResizeParams((prev) => ({
+                              ...prev,
+                              height: newHeight,
+                              width: lockAspectRatio ? Math.round(newHeight * aspectRatio) : prev.width,
+                            }));
                           }}
                           className={`h-14 border-2 rounded-xl text-base pl-12 transition-all duration-300 ${
-                            heightError 
-                              ? "border-red-400 bg-red-50/50 focus:border-red-500" 
+                            heightError
+                              ? "border-red-400 bg-red-50/50 focus:border-red-500"
                               : "border-gray-200/80 bg-white/50 focus:border-violet-400 hover:border-gray-300"
-                        }`}
-                      />
+                          }`}
+                        />
+
                       <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-medium">
                         H:
                       </div>

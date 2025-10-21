@@ -11,6 +11,7 @@ import { User, LogOut, Settings, ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { signOut } from "@/lib/auth"
+import { useRouter } from "next/navigation";
 
 /**
  * @overview UserMenu component displays a dropdown menu with user information and actions like Settings, My Images, and Sign Out.
@@ -27,6 +28,7 @@ import { signOut } from "@/lib/auth"
  */
 export function UserMenu({ user, onSignOut }) {
   const [isOpen, setIsOpen] = useState(false)
+  const router = useRouter();
 
   /**
    * @overview Handles the user sign-out process. It calls the `signOut` function from `@/lib/auth`,
@@ -84,20 +86,23 @@ export function UserMenu({ user, onSignOut }) {
               {/* Navigation items */}
               <div className="space-y-1">
                 {/* Settings button */}
-                <Button
+                {/* <Button
                   variant="ghost"
                   className="w-full justify-start text-gray-700 hover:bg-gray-100"
                   onClick={() => setIsOpen(false)}
                 >
                   <Settings className="w-4 h-4 mr-3" />
                   Settings
-                </Button>
+                </Button> */}
 
                 {/* My Images button */}
                 <Button
                   variant="ghost"
                   className="w-full justify-start text-gray-700 hover:bg-gray-100"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    router.push("/my_images");
+                  }}
                 >
                   <ImageIcon className="w-4 h-4 mr-3" />
                   My Images

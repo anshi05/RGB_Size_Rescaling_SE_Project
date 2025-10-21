@@ -21,6 +21,7 @@ import { supabase } from '@/lib/supabase'
 export default function ResizerRoute() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
+  const [session, setSession] = useState(null);
 
   // Effect to check user authentication status on component mount
   useEffect(() => {
@@ -36,6 +37,7 @@ export default function ResizerRoute() {
       if (!session) {
         router.push('/') // Redirect to home page if not authenticated
       } else {
+        setSession(session);
         setLoading(false)
       }
     }
@@ -48,5 +50,5 @@ export default function ResizerRoute() {
   }
 
   // Render the ImageResizerApp if the user is authenticated
-  return <ImageResizerApp onBack={() => router.push('/')} />
+  return <ImageResizerApp onBack={() => router.push('/')} session={session} />
 }
