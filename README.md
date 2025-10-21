@@ -35,7 +35,7 @@ Make sure you have the following installed:
 3.  Install dependencies using pnpm:
 
     ```bash
-    pnpm install
+    npm install --force
     ```
 
 ### Running the Development Server
@@ -43,7 +43,7 @@ Make sure you have the following installed:
 To start the development server, run:
 
 ```bash
-pnpm dev
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. The application leverages Next.js for server-side rendering and API routes, though image processing is handled client-side for performance.
