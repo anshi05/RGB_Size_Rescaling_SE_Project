@@ -1,3 +1,9 @@
+/**
+ * @file app/resizer/page.jsx
+ * @author Anshi
+ * @description Resizer page component that enforces authentication and renders the ImageResizerApp.
+ * @lastUpdated 2025-10-07
+ */
 'use client'
 
 import { ImageResizerApp } from '@/components/image-resizer-app'

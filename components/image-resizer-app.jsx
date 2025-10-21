@@ -1,3 +1,9 @@
+/**
+ * @file components/image-resizer-app.jsx
+ * @author Anshi, Sameer, Harsh
+ * @description Main application component for the RGB Image Rescaler, handling image upload, resizing, and display.
+ * @lastUpdated 2025-10-01
+ */
 'use client'
 
 import React from "react";

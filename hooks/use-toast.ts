@@ -1,3 +1,9 @@
+/**
+ * @file hooks/use-toast.ts
+ * @author Anshi
+ * @description Custom hook for managing and displaying toast notifications.
+ * @lastUpdated 2025-10-21
+ */
 'use client'
 
 // Inspired by react-hot-toast library

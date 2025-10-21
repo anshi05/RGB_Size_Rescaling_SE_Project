@@ -1,3 +1,9 @@
+/**
+ * @file app/auth/callback/route.js
+ * @author Anshi
+ * @description Route handler for Supabase authentication callback.
+ * @lastUpdated 2025-10-14
+ */
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'

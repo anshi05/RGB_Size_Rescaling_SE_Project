@@ -1,3 +1,9 @@
+/**
+ * @file app/ClientLayout.jsx
+ * @author Anshi
+ * @description Client-side layout component for the RGB Image Rescaler application, handling analytics and suspense.
+ * @lastUpdated 2025-10-01
+ */
 "use client"
 
 import { Analytics } from "@vercel/analytics/next"

@@ -1,3 +1,9 @@
+/**
+ * @file components/landing-page.jsx
+ * @author Anshi
+ * @description Landing Page for the RGB Image Rescaler application.
+ * @lastUpdated 2025-10-14
+ */
 "use client"
 
 import { useState, useEffect, useRef } from "react"

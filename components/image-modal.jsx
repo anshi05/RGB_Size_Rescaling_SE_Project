@@ -1,3 +1,9 @@
+/**
+ * @file components/image-modal.jsx
+ * @author Sameer
+ * @description Modal component for displaying and interacting with images (zoom, pan, switch views).
+ * @lastUpdated 2025-10-07
+ */
 "use client"
 
 import { useState, useEffect, useCallback } from "react"

@@ -1,3 +1,9 @@
+/**
+ * @file components/auth/auth-modal.jsx
+ * @author Anshi
+ * @description Modal component for user authentication (sign in, sign up).
+ * @lastUpdated 2025-10-14
+ */
 "use client";
 
 import React, { useState } from "react";

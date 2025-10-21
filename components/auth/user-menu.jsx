@@ -1,3 +1,9 @@
+/**
+ * @file components/auth/user-menu.jsx
+ * @author Anshi
+ * @description User menu component for displaying user information and actions.
+ * @lastUpdated 2025-10-14
+ */
 "use client"
 
 import { useState } from "react"

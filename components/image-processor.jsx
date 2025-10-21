@@ -1,3 +1,9 @@
+/**
+ * @file components/image-processor.jsx
+ * @author Anshi
+ * @description Provides static methods for image processing, including various resizing algorithms.
+ * @lastUpdated 2025-10-07
+ */
 "use client"
 
 import React from "react";
