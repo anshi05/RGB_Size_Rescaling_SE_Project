@@ -21,45 +21,64 @@ import { ImageModal } from "@/components/image-modal"
 import { useImageUploader } from "../lib/image-actions/handleFileUpload";
 import { handleImageDownload } from "../lib/image-actions/handleImageDownload";
 
+/**
+ * @overview ImageResizerApp is the main application component for the RGB Image Rescaler.
+ * It provides functionality for users to upload images, select resizing parameters (method, width, height),
+ * preview original and resized images, and download the processed images.
+ * The component manages various states related to image handling, processing, and UI interactions.
+ * 
+ * @param {object} props - The properties for the ImageResizerApp component.
+ * @param {function} props.onBack - Callback function to navigate back, typically to the home page.
+ * 
+ * @returns {JSX.Element} The main application interface for image resizing.
+ */
 export function ImageResizerApp({ onBack }) {
+  // State variables for managing image data, UI states, and resize parameters
   const [originalImage, setOriginalImage] = useState(null)
   const [resizedImage, setResizedImage] = useState(null)
   const [selectedFile, setSelectedFile] = useState(null)
   const [isProcessing, setIsProcessing] = useState(false)
-  const [dragActive, setDragActive] = useState(false)
+  const [dragActive, setDragActive] = useState(false) // State for drag-and-drop UI
   const [resizeParams, setResizeParams] = useState({
-    method: "bilinear",
+    method: "bilinear", // Default resize method
     width: 256,
     height: 256,
   })
   const [originalDimensions, setOriginalDimensions] = useState(null)
-  const [aspectRatio, setAspectRatio] = useState(1)
+  const [aspectRatio, setAspectRatio] = useState(1) // Aspect ratio of the original image
   const [modalOpen, setModalOpen] = useState(false)
   const [modalImage, setModalImage] = useState(null)
-  const [lockAspectRatio, setLockAspectRatio] = useState(false)
+  const [lockAspectRatio, setLockAspectRatio] = useState(false) // State for locking aspect ratio
   const [widthError, setWidthError] = useState("")
   const [heightError, setHeightError] = useState("")
-  const resizedImageRef = useRef(null)
-  const [isResized, setIsResized] = useState(false)
+  const resizedImageRef = useRef(null) // Ref for scrolling to resized image
+  const [isResized, setIsResized] = useState(false) // State to track if an image has been resized
 
+  // Custom hook for handling image uploads, including file input and drag-and-drop
   const { handleFile, handleFileInput, handleDrag, handleDrop } = useImageUploader(
     setOriginalImage,
     setResizedImage,
     setSelectedFile,
     setOriginalDimensions,
     setAspectRatio,
-    // Reset isResized when a new file is uploaded
     setIsResized,
   );
 
+  /**
+   * @overview Initiates the image resizing process. It validates if a file is selected,
+   * sets the processing state, calls the `ImageProcessor` to resize the image with the specified parameters,
+   * and then updates the resized image state. Handles errors and ensures UI updates after processing.
+   * 
+   * @returns {Promise<void>} A promise that resolves when the image resizing is complete.
+   */
   const handleResize = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile) return; // Prevent resizing if no file is selected
 
-    setIsProcessing(true)
-    // Reset isResized when starting a new resize operation
-    setIsResized(false)
+    setIsProcessing(true) // Indicate that processing has started
+    setIsResized(false) // Reset resized state for a new operation
 
     try {
+      // Perform the image resizing using the selected method
       const resizedBlob = await ImageProcessor.resizeImage(
         selectedFile,
         resizeParams.width,
@@ -67,33 +86,55 @@ export function ImageResizerApp({ onBack }) {
         resizeParams.method,
       )
 
+      // Create a URL for the resized image blob and update state
       const resizedImageUrl = URL.createObjectURL(resizedBlob)
       setResizedImage(resizedImageUrl)
     } catch (error) {
       console.error("Error resizing image:", error)
       alert("Failed to resize image. Please try again.")
     } finally {
+      // Simulate a processing delay for better user experience, then reset states
       setTimeout(() => {
         setIsProcessing(false)
         setIsResized(true)
-        // Scroll to resized image section
+        // Scroll to the resized image section after processing
         if (resizedImageRef.current) {
           resizedImageRef.current.scrollIntoView({ behavior: "smooth", block: "center" })
         }
-      }, 500) // Keep processing for at least 5 seconds
+      }, 500) // Minimum 500ms processing time
     }
     
   }
 
+  /**
+   * @overview Initiates the download of the resized image. It calls the `handleImageDownload`
+   * utility function with the URL of the resized image and its parameters.
+   * 
+   * @returns {void}
+   */
   const downloadResizedImage = () => {
     handleImageDownload(resizedImage, resizeParams);
   };
 
+  /**
+   * @overview Opens the image modal with the specified image details.
+   * 
+   * @param {string} src - The source URL of the image to display in the modal.
+   * @param {string} title - The title of the image to display in the modal header.
+   * @param {string} [dimensions] - Optional dimensions of the image to display.
+   * 
+   * @returns {void}
+   */
   const openImageModal = (src, title, dimensions) => {
     setModalImage({ src, title, dimensions })
     setModalOpen(true)
   }
 
+  /**
+   * @overview Closes the image modal and resets the modal image state.
+   * 
+   * @returns {void}
+   */
   const closeImageModal = () => {
     setModalOpen(false)
     setModalImage(null)
@@ -101,11 +142,12 @@ export function ImageResizerApp({ onBack }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-orange-50 to-pink-100">
-      {/* Navigation */}
+      {/* Navigation Bar */}
       <nav className="bg-white/80 backdrop-blur-sm border-b border-white/20 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
+              {/* Button to navigate back to the home page */}
               <Button 
                 onClick={onBack} 
                 variant="ghost" 
@@ -115,6 +157,7 @@ export function ImageResizerApp({ onBack }) {
                 Back to Home
               </Button>
               <div className="h-6 w-px bg-gradient-to-b from-gray-300 to-transparent" />
+              {/* Application Logo and Name */}
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gradient-to-r from-rose-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/30">
                   <ImageIcon className="w-6 h-6 text-white" />
@@ -129,23 +172,27 @@ export function ImageResizerApp({ onBack }) {
       </nav>
 
       <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Header */}
+        {/* Application Header Section */}
         <header className="text-center mb-16">
+          {/* Tagline */}
           <div className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-rose-100 to-pink-100 rounded-full border border-rose-200/80 text-rose-700 text-sm mb-8 shadow-sm backdrop-blur-sm">
             <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
             Professional Image Resizing
           </div>
+          {/* Main Title */}
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 via-rose-900 to-pink-900 bg-clip-text text-transparent mb-6 leading-tight">
             RGB Image Rescaler
           </h1>
+          {/* Subtitle/Description */}
           <p className="text-gray-600 text-xl max-w-3xl mx-auto leading-relaxed">
             Resize your images with precision using advanced interpolation methods. Choose the perfect algorithm for your needs.
           </p>
         </header>
 
-        {/* Upload Section */}
+        {/* Image Upload Section */}
         <Card className="mb-12 overflow-hidden shadow-2xl border-0 bg-white/80 backdrop-blur-sm transition-all duration-500 hover:shadow-3xl">
           <CardContent className="p-8">
+            {/* Drag and Drop area for image uploads */}
             <div
               className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 ${
                 dragActive
@@ -157,14 +204,17 @@ export function ImageResizerApp({ onBack }) {
               onDragOver={handleDrag}
               onDrop={handleDrop}
             >
+              {/* Upload icon */}
               <div className="w-24 h-24 bg-gradient-to-r from-rose-500 to-pink-500 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-rose-500/30 transform transition-all duration-500 group-hover:scale-110">
                 <Upload className="h-12 w-12 text-white transform group-hover:scale-110 transition-transform" />
               </div>
               <p className="text-3xl font-semibold text-gray-900 mb-4">Drop your image here</p>
               <p className="text-gray-500 mb-8 text-lg max-w-md mx-auto">Supports JPG, JPEG, and PNG files up to 10MB</p>
+              {/* Display selected file name */}
               {selectedFile && (
                 <p className="text-lg text-gray-700 mb-4">Selected File: <span className="font-semibold">{selectedFile.name}</span></p>
               )}
+              {/* Hidden file input for manual selection */}
               <input
                 type="file"
                 accept=".jpg,.jpeg,.png"
@@ -172,6 +222,7 @@ export function ImageResizerApp({ onBack }) {
                 className="hidden"
                 id="file-input"
               />
+              {/* Button to trigger file input click */}
               <Button
                 onClick={() => document.getElementById("file-input")?.click()}
                 size="lg"
@@ -184,11 +235,11 @@ export function ImageResizerApp({ onBack }) {
           </CardContent>
         </Card>
 
-        {/* Enhanced Controls Section */}
+        {/* Enhanced Controls Section (visible only if an original image is loaded) */}
         {originalImage && (
           <Card className="mb-12 overflow-hidden shadow-2xl border-0 bg-white/80 backdrop-blur-sm transition-all duration-500">
             <CardContent className="p-8">
-              {/* Header */}
+              {/* Section Header */}
               <div className="flex items-center mb-8 pb-6 border-b border-gray-200/60">
                 <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl flex items-center justify-center mr-4 shadow-lg">
                   <Settings className="w-6 h-6 text-white" />
@@ -201,9 +252,9 @@ export function ImageResizerApp({ onBack }) {
 
               {/* Controls Grid */}
               <div className="space-y-8">
-                {/* First Row - Method and Lock */}
+                {/* First Row - Resize Method and Aspect Ratio Lock */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Method Selection */}
+                  {/* Resize Method Selection */}
                   <div className="space-y-4">
                     <Label htmlFor="method" className="text-base font-semibold text-gray-800 flex items-center">
                       <Sparkles className="w-4 h-4 mr-2 text-violet-500" />
@@ -228,6 +279,7 @@ export function ImageResizerApp({ onBack }) {
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                    {/* Description for selected resize method */}
                     <p className="text-sm text-gray-500">
                       {resizeParams.method === "nearest" && "Fastest, good for pixel art"}
                       {resizeParams.method === "bilinear" && "Balanced quality and speed"}
@@ -235,7 +287,7 @@ export function ImageResizerApp({ onBack }) {
                     </p>
                   </div>
 
-                  {/* Aspect Ratio Toggle */}
+                  {/* Aspect Ratio Lock Toggle */}
                   <div className="flex items-center justify-between p-6 bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-2xl border border-gray-200/50">
                     <div className="flex items-center space-x-3">
                       <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${
@@ -263,6 +315,7 @@ export function ImageResizerApp({ onBack }) {
                       checked={lockAspectRatio}
                       onCheckedChange={(checked) => {
                         setLockAspectRatio(checked)
+                        // When locking aspect ratio, reset dimensions to original image dimensions
                         if (originalDimensions) {
                           setResizeParams((prev) => ({
                             ...prev,
@@ -276,7 +329,7 @@ export function ImageResizerApp({ onBack }) {
                   </div>
                 </div>
 
-                {/* Second Row - Dimensions */}
+                {/* Second Row - Width, Height Inputs and Resize Button */}
                 <div className={`grid gap-8 ${lockAspectRatio ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1 lg:grid-cols-3"}`}>
                   {/* Width Input */}
                   <div className="space-y-4">
@@ -305,6 +358,7 @@ export function ImageResizerApp({ onBack }) {
                             setResizeParams((prev) => ({
                               ...prev,
                               width: newWidth,
+                              // Adjust height to maintain aspect ratio if locked
                               height: lockAspectRatio ? Math.round(newWidth / aspectRatio) : prev.height,
                             }))
                           }
@@ -319,6 +373,7 @@ export function ImageResizerApp({ onBack }) {
                         W:
                       </div>
                     </div>
+                    {/* Display width error message */}
                     {widthError && (
                       <p className="text-red-500 text-sm flex items-center">
                         <div className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></div>
@@ -327,7 +382,7 @@ export function ImageResizerApp({ onBack }) {
                     )}
                   </div>
 
-                  {/* Height Input - Only show when not locked */}
+                  {/* Height Input - Only visible when aspect ratio is not locked */}
                   {!lockAspectRatio && (
                     <div className="space-y-4">
                       <Label htmlFor="height" className="text-base font-semibold text-gray-800 flex items-center">
@@ -355,6 +410,7 @@ export function ImageResizerApp({ onBack }) {
                               setResizeParams((prev) => ({
                                 ...prev,
                                 height: newHeight,
+                                // Adjust width to maintain aspect ratio if locked (though this input is hidden if locked)
                                 width: lockAspectRatio ? Math.round(newHeight * aspectRatio) : prev.width,
                               }))
                             }
@@ -369,6 +425,7 @@ export function ImageResizerApp({ onBack }) {
                         H:
                       </div>
                     </div>
+                    {/* Display height error message */}
                     {heightError && (
                       <p className="text-red-500 text-sm flex items-center">
                         <div className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></div>
@@ -396,14 +453,14 @@ export function ImageResizerApp({ onBack }) {
                       ) : (
                         <>
                           <Sparkles className="mr-3 h-5 w-5" />
-                          {isResized ? "Resize Image" : "Resize Image"}
+                          {isResized ? "Resize Image" : "Resize Image"} {/* Button text changes after first resize */}
                         </>
                       )}
                     </Button>
                   </div>
                 </div>
 
-                {/* Original Dimensions Display */}
+                {/* Original Dimensions Display (visible if originalDimensions exist) */}
                 {originalDimensions && (
                   <div className="flex items-center justify-center p-4 bg-gradient-to-r from-blue-50 to-cyan-50/50 rounded-2xl border border-blue-200/50">
                     <div className="text-center">
@@ -419,10 +476,10 @@ export function ImageResizerApp({ onBack }) {
           </Card>
         )}
 
-        {/* Preview Section */}
+        {/* Image Preview Section (visible if original image is loaded) */}
         {originalImage && (
           <div ref={resizedImageRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Original Image */}
+            {/* Original Image Card */}
             <Card className="overflow-hidden shadow-2xl border-0 bg-white/80 backdrop-blur-sm transition-all duration-500 hover:shadow-3xl">
               <CardContent className="p-0">
                 <div className="bg-gradient-to-r from-violet-500 to-purple-500 px-6 py-4">
@@ -447,6 +504,7 @@ export function ImageResizerApp({ onBack }) {
                       alt="Original"
                       className="w-full h-auto max-h-96 object-contain mx-auto transition-transform duration-500 group-hover:scale-105"
                     />
+                    {/* Button to open fullscreen modal for original image */}
                     <button
                       onClick={() =>
                         openImageModal(
@@ -467,7 +525,7 @@ export function ImageResizerApp({ onBack }) {
               </CardContent>
             </Card>
 
-            {/* Resized Image */}
+            {/* Resized Image Card */}
             <Card className="overflow-hidden shadow-2xl border-0 bg-white/80 backdrop-blur-sm transition-all duration-500 hover:shadow-3xl">
               <CardContent className="p-0">
                 <div className="bg-gradient-to-r from-rose-500 to-pink-500 px-6 py-4">
@@ -480,6 +538,7 @@ export function ImageResizerApp({ onBack }) {
                         {resizeParams.method} interpolation
                       </p>
                     </div>
+                    {/* Download button for resized image */}
                     {resizedImage && (
                       <Button
                         onClick={downloadResizedImage}
@@ -500,6 +559,7 @@ export function ImageResizerApp({ onBack }) {
                         alt="Resized"
                         className="w-full h-auto max-h-96 object-contain mx-auto transition-transform duration-500 group-hover:scale-105"
                       />
+                      {/* Button to open fullscreen modal for resized image */}
                       <button
                         onClick={() =>
                           openImageModal(
@@ -531,6 +591,7 @@ export function ImageResizerApp({ onBack }) {
           </div>
         )}
 
+        {/* Image Modal Component */}
         <ImageModal
           isOpen={modalOpen}
           onClose={closeImageModal}

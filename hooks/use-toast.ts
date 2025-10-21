@@ -30,6 +30,12 @@ const actionTypes = {
 
 let count = 0
 
+/**
+ * @overview Generates a unique ID for toast notifications.
+ * It increments a global counter and ensures the ID is a string.
+ * 
+ * @returns {string} A unique string ID for a toast.
+ */
 function genId() {
   count = (count + 1) % Number.MAX_SAFE_INTEGER
   return count.toString()
@@ -61,11 +67,20 @@ interface State {
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
 
+/**
+ * @overview Adds a toast's ID to a queue for eventual removal after a delay.
+ * This prevents toasts from being removed immediately after dismissal animation starts.
+ * 
+ * @param {string} toastId - The unique ID of the toast to be added to the remove queue.
+ * 
+ * @returns {void}
+ */
 const addToRemoveQueue = (toastId: string) => {
   if (toastTimeouts.has(toastId)) {
-    return
+    return // If already in queue, do nothing
   }
 
+  // Set a timeout to remove the toast from the state after a specified delay
   const timeout = setTimeout(() => {
     toastTimeouts.delete(toastId)
     dispatch({
@@ -77,17 +92,28 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout)
 }
 
+/**
+ * @overview Reducer function for managing the state of toast notifications.
+ * It handles adding, updating, dismissing, and removing toasts based on dispatched actions.
+ * 
+ * @param {State} state - The current state of toast notifications.
+ * @param {Action} action - The action to be performed on the toast state.
+ * 
+ * @returns {State} The new state after applying the action.
+ */
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'ADD_TOAST':
       return {
         ...state,
+        // Add the new toast to the beginning of the array, limiting to TOAST_LIMIT
         toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
       }
 
     case 'UPDATE_TOAST':
       return {
         ...state,
+        // Update an existing toast by merging its new properties
         toasts: state.toasts.map((t) =>
           t.id === action.toast.id ? { ...t, ...action.toast } : t,
         ),
@@ -108,6 +134,7 @@ export const reducer = (state: State, action: Action): State => {
 
       return {
         ...state,
+        // Mark the toast(s) as not open, triggering animation
         toasts: state.toasts.map((t) =>
           t.id === toastId || toastId === undefined
             ? {
@@ -122,9 +149,10 @@ export const reducer = (state: State, action: Action): State => {
       if (action.toastId === undefined) {
         return {
           ...state,
-          toasts: [],
+          toasts: [], // Remove all toasts if no specific ID is provided
         }
       }
+      // Filter out the toast with the matching ID
       return {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.toastId),
@@ -136,8 +164,17 @@ const listeners: Array<(state: State) => void> = []
 
 let memoryState: State = { toasts: [] }
 
+/**
+ * @overview Dispatches an action to the toast reducer, updating the global toast state
+ * and notifying all registered listeners.
+ * 
+ * @param {Action} action - The action object to dispatch, which specifies the type of state change.
+ * 
+ * @returns {void}
+ */
 function dispatch(action: Action) {
-  memoryState = reducer(memoryState, action)
+  memoryState = reducer(memoryState, action) // Update the global state using the reducer
+  // Notify all registered listeners about the state change
   listeners.forEach((listener) => {
     listener(memoryState)
   })
@@ -145,22 +182,45 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, 'id'>
 
+/**
+ * @overview Creates and displays a new toast notification.
+ * It generates a unique ID, dispatches an 'ADD_TOAST' action,
+ * and returns an object with the toast's ID and functions to dismiss or update it.
+ * 
+ * @param {Toast} props - The properties for the toast notification (e.g., title, description, action).
+ * 
+ * @returns {{id: string, dismiss: Function, update: Function}} An object containing the toast's ID and control functions.
+ */
 function toast({ ...props }: Toast) {
   const id = genId()
 
+  /**
+   * @overview Updates an existing toast notification with new properties.
+   * 
+   * @param {ToasterToast} props - The new properties to apply to the toast.
+   * 
+   * @returns {void}
+   */
   const update = (props: ToasterToast) =>
     dispatch({
       type: 'UPDATE_TOAST',
       toast: { ...props, id },
     })
+  /**
+   * @overview Dismisses the toast notification, triggering its exit animation.
+   * 
+   * @returns {void}
+   */
   const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id })
 
+  // Dispatch the action to add the new toast to the state
   dispatch({
     type: 'ADD_TOAST',
     toast: {
       ...props,
       id,
       open: true,
+      // Callback to dismiss the toast when its `open` state changes to false
       onOpenChange: (open) => {
         if (!open) dismiss()
       },
@@ -174,23 +234,33 @@ function toast({ ...props }: Toast) {
   }
 }
 
+/**
+ * @overview A custom React hook for interacting with the global toast notification system.
+ * It provides access to the current list of active toasts and functions to create or dismiss toasts.
+ * 
+ * @returns {{toasts: ToasterToast[], toast: Function, dismiss: Function}} An object containing the current toasts array,
+ * a function to create new toasts, and a function to dismiss existing toasts.
+ */
 function useToast() {
+  // State to hold the current list of toasts, initialized with the global memoryState
   const [state, setState] = React.useState<State>(memoryState)
 
+  // Effect hook to subscribe and unsubscribe to state changes.
   React.useEffect(() => {
-    listeners.push(setState)
+    listeners.push(setState) // Add current component's setState to listeners
     return () => {
+      // Cleanup: remove setState from listeners on unmount
       const index = listeners.indexOf(setState)
       if (index > -1) {
         listeners.splice(index, 1)
       }
     }
-  }, [state])
+  }, [state]) // Rerun effect if state reference changes (though setState is stable)
 
   return {
     ...state,
-    toast,
-    dismiss: (toastId?: string) => dispatch({ type: 'DISMISS_TOAST', toastId }),
+    toast, // Function to create new toasts
+    dismiss: (toastId?: string) => dispatch({ type: 'DISMISS_TOAST', toastId }), // Function to dismiss toasts
   }
 }
 
