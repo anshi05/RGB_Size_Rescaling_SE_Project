@@ -101,7 +101,7 @@ export function UserMenu({ user, onSignOut }) {
                   className="w-full justify-start text-gray-700 hover:bg-gray-100"
                   onClick={() => {
                     setIsOpen(false);
-                    router.push("/my_images");
+                    router.push('/my_images');
                   }}
                 >
                   <ImageIcon className="w-4 h-4 mr-3" />

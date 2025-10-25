@@ -109,7 +109,7 @@ export function ImageResizerApp({ onBack, session }) {
         if (resizedImageRef.current) {
           resizedImageRef.current.scrollIntoView({ behavior: "smooth", block: "center" })
         }
-      }, 100) // Minimum 100ms processing time
+      }, 500) // Minimum 500ms processing time
     }
     
   }
@@ -157,9 +157,7 @@ export function ImageResizerApp({ onBack, session }) {
             resized_img: resizedImageUrl, 
             file_name: fileName, 
             created_at: timestamp,
-            interpolation_method: resizeParams.method,
-            resized_width: resizeParams.width,
-            resized_height: resizeParams.height
+            interpolation_method: resizeParams.method
           }
         ]);
 
@@ -412,53 +410,53 @@ export function ImageResizerApp({ onBack, session }) {
                       Target Width
                     </Label>
                     <div className="relative">
-                    {/* Width Input */}
-                    <Input
-                      id="width"
-                      type="text" // changed to text to allow detection of invalid chars
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={resizeParams.width}
-                      onChange={(e) => {
-                        const value = e.target.value.trim();
+                      {/* Width Input */}
+                      <Input
+                        id="width"
+                        type="text" // changed to text to allow detection of invalid chars
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={resizeParams.width}
+                        onChange={(e) => {
+                          const value = e.target.value.trim();
 
-                        // check for empty
-                        if (value === "") {
-                          setWidthError("Width cannot be empty.");
-                          setResizeParams((prev) => ({ ...prev, width: "" }));
-                          return;
-                        }
+                          // check for empty
+                          if (value === "") {
+                            setWidthError("Width cannot be empty.");
+                            setResizeParams((prev) => ({ ...prev, width: "" }));
+                            return;
+                          }
 
-                        // check for non-digit characters
-                        if (!/^\d+$/.test(value)) {
-                          setWidthError("Please enter a valid width (digits only).");
-                          setResizeParams((prev) => ({ ...prev, width: value }));
-                          return;
-                        }
+                          // check for non-digit characters
+                          if (!/^\d+$/.test(value)) {
+                            setWidthError("Please enter a valid width (digits only).");
+                            setResizeParams((prev) => ({ ...prev, width: value }));
+                            return;
+                          }
 
-                        const newWidth = Number(value);
+                          const newWidth = Number(value);
 
-                        // check for numeric validity
-                        if (isNaN(newWidth) || newWidth < 1) {
-                          setWidthError("Please enter a valid width (min 1).");
-                          setResizeParams((prev) => ({ ...prev, width: value }));
-                          return;
-                        }
+                          // check for numeric validity
+                          if (isNaN(newWidth) || newWidth < 1) {
+                            setWidthError("Please enter a valid width (min 1).");
+                            setResizeParams((prev) => ({ ...prev, width: value }));
+                            return;
+                          }
 
-                        // all good
-                        setWidthError("");
-                        setResizeParams((prev) => ({
-                          ...prev,
-                          width: newWidth,
-                          height: lockAspectRatio ? Math.round(newWidth / aspectRatio) : prev.height,
-                        }));
-                      }}
-                      className={`h-14 border-2 rounded-xl text-base pl-12 transition-all duration-300 ${
-                        widthError
-                          ? "border-red-400 bg-red-50/50 focus:border-red-500"
-                          : "border-gray-200/80 bg-white/50 focus:border-rose-400 hover:border-gray-300"
-                      }`}
-                    />
+                          // all good
+                          setWidthError("");
+                          setResizeParams((prev) => ({
+                            ...prev,
+                            width: newWidth,
+                            height: lockAspectRatio ? Math.round(newWidth / aspectRatio) : prev.height,
+                          }));
+                        }}
+                        className={`h-14 border-2 rounded-xl text-base pl-12 transition-all duration-300 ${
+                          widthError
+                            ? "border-red-400 bg-red-50/50 focus:border-red-500"
+                            : "border-gray-200/80 bg-white/50 focus:border-rose-400 hover:border-gray-300"
+                        }`}
+                      />
 
                       <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-medium">
                         W:
