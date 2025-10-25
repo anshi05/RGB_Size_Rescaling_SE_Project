@@ -1,3 +1,9 @@
+/**
+ * @file app/my_images/page.jsx
+ * @author Anshi
+ * @description Displays a user's history of resized images, including original and resized versions, and resizing details.
+ * @lastUpdated 2025-10-25
+ */
 'use client'
 
 import { useState, useEffect, useCallback } from 'react';
@@ -11,6 +17,14 @@ import { useToast } from "@/hooks/use-toast";
 import { ImageModal } from "@/components/image-modal";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
+/**
+ * @overview MyImagesPage component fetches and displays the authenticated user's image resizing history.
+ * It retrieves original and resized image URLs, file names, timestamps, and interpolation methods
+ * from Supabase, allowing users to view a gallery of their past resizing operations.
+ * Users can also click on images to open a larger preview modal.
+ * 
+ * @returns {JSX.Element} The image history page, displaying a list of resized images or a message if none are found.
+ */
 export default function MyImagesPage() {
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState([]);
@@ -129,6 +143,7 @@ export default function MyImagesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-orange-50 to-pink-100">
+      {/* Page Header: Navigation and Page Title */}
       <nav className="bg-white/80 backdrop-blur-sm border-b border-white/20 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">

@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signUp, signIn, resetPassword } from "@/lib/auth";
+import { useToast } from "@/hooks/use-toast";
 
 export function AuthModal({ isOpen, onClose, onSuccess }) {
   const [mode, setMode] = useState("signin");
@@ -23,6 +24,8 @@ export function AuthModal({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+
+  const { toast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,6 +40,10 @@ export function AuthModal({ isOpen, onClose, onSuccess }) {
           setError(error.message);
         } else {
           setMessage("Check your email for the confirmation link!");
+          toast({
+            title: "Account Created",
+            description: "Please check your email for the confirmation link.",
+          });
         }
       } else if (mode === "signin") {
         const { error } = await signIn(email, password);
@@ -45,6 +52,10 @@ export function AuthModal({ isOpen, onClose, onSuccess }) {
         } else {
           onSuccess();
           onClose();
+          toast({
+            title: "Welcome Back!",
+            description: "You have successfully signed in.",
+          });
         }
       } else if (mode === "reset") {
         const { error } = await resetPassword(email);
@@ -52,6 +63,10 @@ export function AuthModal({ isOpen, onClose, onSuccess }) {
           setError(error.message);
         } else {
           setMessage("Check your email for the password reset link!");
+          toast({
+            title: "Password Reset Link Sent",
+            description: "Please check your email to reset your password.",
+          });
         }
       }
     } catch (err) {

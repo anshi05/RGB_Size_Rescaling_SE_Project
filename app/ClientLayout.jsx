@@ -9,6 +9,7 @@
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
+import { Toaster } from "@/components/ui/toaster";
 
 /**
  * @overview ClientLayout component is responsible for client-side rendering concerns,
@@ -29,6 +30,7 @@ export default function ClientLayout({ children }) {
       <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
       {/* Vercel Analytics component for tracking usage */}
       <Analytics />
+      <Toaster />
     </>
   )
 }

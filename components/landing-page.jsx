@@ -17,6 +17,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { supabase } from "@/lib/supabase"
 import { ImageResizerApp } from "@/components/image-resizer-app"
 import { useRouter } from "next/navigation"
+import Image from "next/image";
 
 /**
  * @overview The LandingPage component serves as the entry point for the application,
@@ -224,10 +225,13 @@ export function LandingPage() {
       </nav>
 
       {/* Hero Section: displays project title, authors, and primary call to action */}
-      <section className="relative z-10 px-6 py-24 ">
+      <section className="relative z-10 px-6 py-8 ">
         <div className="max-w-7xl mx-auto text-center">
           {/* College Project Title and Details */}
           <div className="pb-8 text-white/90">
+            <div className="mb-8 flex justify-center">
+              <Image src="/nitk.png" alt="NITK Logo" width={120} height={120} />
+            </div>
             <p className="text-xl md:text-2xl font-semibold mb-6">
               SOFTWARE ENGINEERING (IT303) COURSE PROJECT
             </p>
