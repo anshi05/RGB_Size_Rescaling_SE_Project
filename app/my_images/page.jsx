@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Loader2, Image as ImageIcon, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from "@/hooks/use-toast";
 import { ImageModal } from "@/components/image-modal";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export default function MyImagesPage() {
   const [loading, setLoading] = useState(true);
@@ -28,45 +29,94 @@ export default function MyImagesPage() {
     setModalImage(null);
   }, []);
 
-  useEffect(() => {
-    const fetchImages = async () => {
-      setLoading(true);
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  const fetchImages = useCallback(async () => {
+    setLoading(true);
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-      if (sessionError || !session?.user) {
-        console.error("User not authenticated:", sessionError?.message);
-        toast({
-          title: "Authentication Required",
-          description: "Please log in to view your image history.",
-          variant: "destructive",
-        });
-        router.push('/');
-        return;
-      }
+    if (sessionError || !session?.user) {
+      console.error("User not authenticated:", sessionError?.message);
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to view your image history.",
+        variant: "destructive",
+      });
+      router.push('/');
+      return;
+    }
 
-      const userId = session.user.id;
+    const userId = session.user.id;
 
-      const { data, error } = await supabase
-        .from('images_history')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
+    const { data, error } = await supabase
+      .from('images_history')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error("Error fetching image history:", error);
-        toast({
-          title: "Error",
-          description: `Failed to fetch image history: ${error.message}`,
-          variant: "destructive",
-        });
-      } else {
-        setImages(data);
-      }
-      setLoading(false);
-    };
-
-    fetchImages();
+    if (error) {
+      console.error("Error fetching image history:", error);
+      toast({
+        title: "Error",
+        description: `Failed to fetch image history: ${error.message}`,
+        variant: "destructive",
+      });
+    } else {
+      setImages(data);
+    }
+    setLoading(false);
   }, [router, toast]);
+
+  useEffect(() => {
+    fetchImages();
+  }, [fetchImages]);
+
+  const handleDeleteImage = useCallback(async (imageId, originalImgUrl, resizedImgUrl) => {
+    if (!confirm("Are you sure you want to delete this image and its history?")) return;
+
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session?.user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to delete image history.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Extract file paths from URLs
+      const originalPath = originalImgUrl.split('public/image_history/')[1];
+      const resizedPath = resizedImgUrl.split('public/image_history/')[1];
+
+      // Delete files from storage
+      const { error: storageError } = await supabase.storage
+        .from('image_history')
+        .remove([originalPath, resizedPath]);
+
+      if (storageError) throw storageError;
+
+      // Delete record from database
+      const { error: dbError } = await supabase
+        .from('images_history')
+        .delete()
+        .eq('id', imageId);
+
+      if (dbError) throw dbError;
+
+      toast({
+        title: "Image Deleted",
+        description: "Image and its history successfully removed.",
+      });
+      fetchImages(); // Refresh the image list
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      toast({
+        title: "Error",
+        description: `Failed to delete image: ${error.message}`,
+        variant: "destructive",
+      });
+    }
+  }, [fetchImages, toast]);
 
   if (loading) {
     return (
@@ -102,64 +152,102 @@ export default function MyImagesPage() {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-rose-900 to-pink-900 bg-clip-text text-transparent mb-10 text-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 via-rose-900 to-pink-900 bg-clip-text text-transparent mb-8 md:mb-10 text-center">
           Your Image History
         </h1>
 
         {images.length === 0 ? (
-          <div className="text-center text-gray-600 text-xl py-20">
+          <div className="text-center text-gray-600 text-lg md:text-xl py-10 md:py-20">
             <p>No resized images found yet.</p>
             <Button 
               onClick={() => router.push('/')} 
-              className="mt-8 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-10 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+              className="mt-6 md:mt-8 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white border-0 px-8 py-3 md:px-10 md:py-4 text-base md:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
             >
               Go to Resizer
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {images.map((img) => (
-              <Card key={img.id} className="overflow-hidden shadow-xl border-0 bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardHeader className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-b border-purple-200/50 p-4">
-                  <CardTitle className="text-lg font-semibold text-gray-800">{img.file_name}</CardTitle>
-                  <p className="text-sm text-gray-500">Resized on: {new Date(img.created_at).toLocaleString()}</p>
-                  <p className="text-sm text-gray-500">Method: {img.interpolation_method}</p>
+              <Card key={img.id} className="overflow-hidden shadow-lg border-0 bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+                <CardHeader className="p-4 relative">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1 min-w-0">
+                      <CardTitle className="text-sm font-semibold text-gray-800 truncate" title={img.file_name}>
+                        {img.file_name}
+                      </CardTitle>
+                     
+                      <p className="text-xs text-gray-500 mt-1">
+                        Resized On: {new Date(img.created_at).toLocaleDateString()}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Method: {img.interpolation_method}
+                      </p>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 rounded-lg opacity-70 hover:opacity-100 hover:bg-rose-50 hover:text-rose-600 transition-all duration-200 flex-shrink-0 ml-2"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span className="sr-only">Delete Image</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="rounded-2xl">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Image</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your image
+                            and remove your data from our servers.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => handleDeleteImage(img.id, img.original_img, img.resized_img)}
+                            className="bg-rose-500 hover:bg-rose-600 rounded-lg"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </CardHeader>
-                <CardContent className="p-4">
-                  <div className="grid grid-cols-2 gap-4 mb-4">
+                <CardContent className="p-4 pt-0">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-2">Original</p>
+                      <p className="text-xs font-medium text-gray-700 mb-2">Original</p>
                       <button 
                         onClick={() => openImageModal(img.original_img, `Original: ${img.file_name}`)} 
-                        className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity duration-200"
+                        className="relative w-full h-24 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity duration-200 border border-gray-200"
                       >
                         <Image 
                           src={img.original_img} 
                           alt="Original Image" 
-                          layout="fill" 
-                          objectFit="contain" 
+                          fill
                           className="object-contain"
                         />
                       </button>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-2">Resized</p>
+                      <p className="text-xs font-medium text-gray-700 mb-2">Resized</p>
                       <button 
                         onClick={() => openImageModal(img.resized_img, `Resized: ${img.file_name}`)} 
-                        className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity duration-200"
+                        className="relative w-full h-24 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity duration-200 border border-gray-200"
                       >
                         <Image 
                           src={img.resized_img} 
                           alt="Resized Image" 
-                          layout="fill" 
-                          objectFit="contain" 
+                          fill
                           className="object-contain"
                         />
                       </button>
                     </div>
                   </div>
-                  {/* Add download button or view original/resized in full size */}
                 </CardContent>
               </Card>
             ))}
