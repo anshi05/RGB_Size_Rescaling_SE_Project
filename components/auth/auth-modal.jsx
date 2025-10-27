@@ -35,9 +35,31 @@ export function AuthModal({ isOpen, onClose, onSuccess }) {
 
     try {
       if (mode === "signup") {
-        const { error } = await signUp(email, password, fullName);
+        const { data, error } = await signUp(email, password, fullName);
         if (error) {
-          setError(error.message);
+          if (error.message.includes("already registered")) {
+            setError("This email is already registered. Please sign in.");
+            toast({
+              title: "Registration Failed",
+              description: "This email is already registered. Please sign in or use a different email.",
+              variant: "destructive",
+            });
+          } else {
+            setError(error.message);
+            toast({
+              title: "Error",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+        } else if (data && data.user && !data.session) {
+          // Supabase returns data.user but null session and null error for existing emails to prevent enumeration.
+          setError("This email is already registered. Please sign in.");
+          toast({
+            title: "Account Already Exists ",
+            description: "This email is already registered. Please sign in.",
+            variant: "default",
+          });
         } else {
           setMessage("Check your email for the confirmation link!");
           toast({
