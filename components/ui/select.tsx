@@ -1,3 +1,8 @@
+/**
+ * @file components/ui/select.tsx
+ * @description This file contains the Select component and its sub-components, built using Radix UI's Select primitive, providing accessible and customizable dropdown selection menus.
+ * @lastUpdated 2025-10-25
+ */
 'use client'
 
 import * as React from 'react'
@@ -6,12 +11,44 @@ import { Check, ChevronDown, ChevronUp } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * @overview The root Select component, built on Radix UI's SelectPrimitive.Root.
+ * It manages the open/closed state and value of a custom dropdown select.
+ * 
+ * @see https://www.radix-ui.com/docs/primitives/components/select
+ * 
+ * @returns {JSX.Element} The Select root component.
+ */
 const Select = SelectPrimitive.Root
 
+/**
+ * @overview The SelectGroup component, built on Radix UI's SelectPrimitive.Group.
+ * Used to group related select items together within the dropdown content.
+ * 
+ * @returns {JSX.Element} The Select group component.
+ */
 const SelectGroup = SelectPrimitive.Group
 
+/**
+ * @overview The SelectValue component, built on Radix UI's SelectPrimitive.Value.
+ * This component displays the currently selected value of the select input.
+ * 
+ * @returns {JSX.Element} The Select value component.
+ */
 const SelectValue = SelectPrimitive.Value
 
+/**
+ * @overview The SelectTrigger component, built on Radix UI's SelectPrimitive.Trigger.
+ * This component should wrap the interactive element that, when clicked, opens the select dropdown.
+ * It includes a chevron icon to indicate its dropdown functionality.
+ * 
+ * @param {object} props - The properties for the SelectTrigger component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the trigger button.
+ * @param {React.ReactNode} props.children - The content to display inside the trigger (usually a `SelectValue`).
+ * @param {React.Ref<HTMLButtonElement>} ref - Ref to the underlying HTMLButtonElement.
+ * 
+ * @returns {JSX.Element} The Select trigger component.
+ */
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
@@ -32,6 +69,17 @@ const SelectTrigger = React.forwardRef<
 ))
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
 
+/**
+ * @overview The SelectScrollUpButton component, built on Radix UI's SelectPrimitive.ScrollUpButton.
+ * A button displayed at the top of the select content when there are more items to scroll up to.
+ * It includes an up-chevron icon.
+ * 
+ * @param {object} props - The properties for the SelectScrollUpButton component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the scroll up button.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Select scroll up button component.
+ */
 const SelectScrollUpButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>
@@ -49,6 +97,17 @@ const SelectScrollUpButton = React.forwardRef<
 ))
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
 
+/**
+ * @overview The SelectScrollDownButton component, built on Radix UI's SelectPrimitive.ScrollDownButton.
+ * A button displayed at the bottom of the select content when there are more items to scroll down to.
+ * It includes a down-chevron icon.
+ * 
+ * @param {object} props - The properties for the SelectScrollDownButton component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the scroll down button.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Select scroll down button component.
+ */
 const SelectScrollDownButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollDownButton>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>
@@ -67,6 +126,19 @@ const SelectScrollDownButton = React.forwardRef<
 SelectScrollDownButton.displayName =
   SelectPrimitive.ScrollDownButton.displayName
 
+/**
+ * @overview The SelectContent component, built on Radix UI's SelectPrimitive.Content.
+ * This component contains the scrollable list of `SelectItem` components that appear when the `SelectTrigger` is open.
+ * It handles positioning, animations, and rendering within a portal.
+ * 
+ * @param {object} props - The properties for the SelectContent component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the content wrapper.
+ * @param {React.ReactNode} props.children - The child elements (typically `SelectGroup` and `SelectItem` components) to be rendered within the content.
+ * @param {('popper' | 'item')} [props.position='popper'] - The positioning strategy for the content.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Select content component.
+ */
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
@@ -99,6 +171,16 @@ const SelectContent = React.forwardRef<
 ))
 SelectContent.displayName = SelectPrimitive.Content.displayName
 
+/**
+ * @overview The SelectLabel component, built on Radix UI's SelectPrimitive.Label.
+ * A non-interactive label used to categorize or describe a group of select items within the dropdown content.
+ * 
+ * @param {object} props - The properties for the SelectLabel component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the label.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Select label component.
+ */
 const SelectLabel = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Label>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
@@ -111,6 +193,17 @@ const SelectLabel = React.forwardRef<
 ))
 SelectLabel.displayName = SelectPrimitive.Label.displayName
 
+/**
+ * @overview The SelectItem component, built on Radix UI's SelectPrimitive.Item.
+ * An individual, selectable option within the select dropdown. It includes a checkmark icon for visual feedback.
+ * 
+ * @param {object} props - The properties for the SelectItem component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the select item.
+ * @param {React.ReactNode} props.children - The content to display inside the select item.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Select item component.
+ */
 const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
@@ -134,6 +227,16 @@ const SelectItem = React.forwardRef<
 ))
 SelectItem.displayName = SelectPrimitive.Item.displayName
 
+/**
+ * @overview The SelectSeparator component, built on Radix UI's SelectPrimitive.Separator.
+ * A visual separator used to divide groups of select items within the dropdown content.
+ * 
+ * @param {object} props - The properties for the SelectSeparator component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the separator.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Select separator component.
+ */
 const SelectSeparator = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>

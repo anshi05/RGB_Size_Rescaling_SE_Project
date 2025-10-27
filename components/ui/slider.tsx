@@ -1,3 +1,8 @@
+/**
+ * @file components/ui/slider.tsx
+ * @description This file contains the Slider component, built using Radix UI's Slider primitive, providing an accessible and customizable slider for selecting a value or range of values.
+ * @lastUpdated 2025-10-25
+ */
 'use client'
 
 import * as React from 'react'
@@ -5,6 +10,19 @@ import * as SliderPrimitive from '@radix-ui/react-slider'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * @overview The Slider component, built on Radix UI's SliderPrimitive.Root.
+ * It provides a customizable slider for selecting a single value or a range of values, with accessibility features.
+ * 
+ * @see https://www.radix-ui.com/docs/primitives/components/slider
+ * 
+ * @param {object} props - The properties for the Slider component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the slider root.
+ * @param {number[]} [props.value] - The current value(s) of the slider. Must be an array, even for a single value.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Slider component.
+ */
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>

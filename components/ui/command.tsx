@@ -1,3 +1,8 @@
+/**
+ * @file components/ui/command.tsx
+ * @description This file contains the Command component and its sub-components, providing a command menu or searchable interface using `cmdk`.
+ * @lastUpdated 2025-10-25
+ */
 'use client'
 
 import * as React from 'react'
@@ -8,6 +13,18 @@ import { Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 
+/**
+ * @overview The root Command component, built on `cmdk`'s CommandPrimitive.
+ * It provides a highly performant and accessible command menu interface.
+ * 
+ * @see https://cmdk.paco.me/
+ * 
+ * @param {object} props - The properties for the Command component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the command root.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Command root component.
+ */
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive>
@@ -23,6 +40,16 @@ const Command = React.forwardRef<
 ))
 Command.displayName = CommandPrimitive.displayName
 
+/**
+ * @overview The CommandDialog component.
+ * Wraps the `Command` component within a `Dialog` to create a modal command menu.
+ * 
+ * @param {object} props - The properties for the CommandDialog component.
+ * @param {React.ReactNode} props.children - The child elements to be rendered within the command dialog.
+ * @augments DialogProps
+ * 
+ * @returns {JSX.Element} The Command dialog component.
+ */
 const CommandDialog = ({ children, ...props }: DialogProps) => {
   return (
     <Dialog {...props}>
@@ -35,6 +62,16 @@ const CommandDialog = ({ children, ...props }: DialogProps) => {
   )
 }
 
+/**
+ * @overview The CommandInput component, built on `cmdk`'s CommandPrimitive.Input.
+ * Provides an input field for searching command items.
+ * 
+ * @param {object} props - The properties for the CommandInput component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the input field.
+ * @param {React.Ref<HTMLInputElement>} ref - Ref to the underlying HTMLInputElement.
+ * 
+ * @returns {JSX.Element} The Command input component.
+ */
 const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
@@ -54,6 +91,16 @@ const CommandInput = React.forwardRef<
 
 CommandInput.displayName = CommandPrimitive.Input.displayName
 
+/**
+ * @overview The CommandList component, built on `cmdk`'s CommandPrimitive.List.
+ * Renders a scrollable list of command items.
+ * 
+ * @param {object} props - The properties for the CommandList component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the list.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Command list component.
+ */
 const CommandList = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
@@ -67,6 +114,16 @@ const CommandList = React.forwardRef<
 
 CommandList.displayName = CommandPrimitive.List.displayName
 
+/**
+ * @overview The CommandEmpty component, built on `cmdk`'s CommandPrimitive.Empty.
+ * Displays a message when no command items match the search query.
+ * 
+ * @param {object} props - The properties for the CommandEmpty component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the empty state message.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Command empty state component.
+ */
 const CommandEmpty = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Empty>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>
@@ -80,6 +137,16 @@ const CommandEmpty = React.forwardRef<
 
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName
 
+/**
+ * @overview The CommandGroup component, built on `cmdk`'s CommandPrimitive.Group.
+ * Organizes related command items under a common heading.
+ * 
+ * @param {object} props - The properties for the CommandGroup component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the group container.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Command group component.
+ */
 const CommandGroup = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Group>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group>
@@ -96,6 +163,16 @@ const CommandGroup = React.forwardRef<
 
 CommandGroup.displayName = CommandPrimitive.Group.displayName
 
+/**
+ * @overview The CommandSeparator component, built on `cmdk`'s CommandPrimitive.Separator.
+ * Provides a visual separator between command groups or items.
+ * 
+ * @param {object} props - The properties for the CommandSeparator component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the separator.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Command separator component.
+ */
 const CommandSeparator = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator>
@@ -108,6 +185,16 @@ const CommandSeparator = React.forwardRef<
 ))
 CommandSeparator.displayName = CommandPrimitive.Separator.displayName
 
+/**
+ * @overview The CommandItem component, built on `cmdk`'s CommandPrimitive.Item.
+ * Represents an individual, selectable command within the command menu.
+ * 
+ * @param {object} props - The properties for the CommandItem component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the item.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Command item component.
+ */
 const CommandItem = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>
@@ -124,6 +211,15 @@ const CommandItem = React.forwardRef<
 
 CommandItem.displayName = CommandPrimitive.Item.displayName
 
+/**
+ * @overview The CommandShortcut component.
+ * Displays a keyboard shortcut associated with a command item.
+ * 
+ * @param {object} props - The properties for the CommandShortcut component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the shortcut text.
+ * 
+ * @returns {JSX.Element} The Command shortcut component.
+ */
 const CommandShortcut = ({
   className,
   ...props

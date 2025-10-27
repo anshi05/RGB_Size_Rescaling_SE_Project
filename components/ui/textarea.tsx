@@ -1,7 +1,22 @@
+/**
+ * @file components/ui/textarea.tsx
+ * @description This file contains the Textarea component, providing a styled and accessible multi-line text input field.
+ * @lastUpdated 2025-10-25
+ */
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * @overview The Textarea component.
+ * It renders a native `<textarea>` element, providing a multi-line text input field with customizable styling.
+ * 
+ * @param {object} props - The properties for the Textarea component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the textarea.
+ * @param {React.Ref<HTMLTextAreaElement>} ref - Ref to the underlying HTMLTextAreaElement.
+ * 
+ * @returns {JSX.Element} The Textarea component.
+ */
 const Textarea = React.forwardRef<
   HTMLTextAreaElement,
   React.ComponentProps<'textarea'>

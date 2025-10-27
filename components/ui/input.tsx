@@ -1,7 +1,23 @@
+/**
+ * @file components/ui/input.tsx
+ * @description This file contains the Input component, providing a styled and accessible input field.
+ * @lastUpdated 2025-10-25
+ */
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * @overview The Input component.
+ * A customizable input field for collecting user text input, supporting various HTML input types.
+ * 
+ * @param {object} props - The properties for the Input component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the input element.
+ * @param {string} [props.type='text'] - The type of the input (e.g., 'text', 'email', 'password').
+ * @param {React.Ref<HTMLInputElement>} ref - Ref to the underlying HTMLInputElement.
+ * 
+ * @returns {JSX.Element} The Input component.
+ */
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
   ({ className, type, ...props }, ref) => {
     return (

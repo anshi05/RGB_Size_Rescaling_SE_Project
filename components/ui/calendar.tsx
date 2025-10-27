@@ -1,3 +1,8 @@
+/**
+ * @file components/ui/calendar.tsx
+ * @description This file contains the Calendar component, built using `react-day-picker`, for date selection.
+ * @lastUpdated 2025-10-25
+ */
 'use client'
 
 import * as React from 'react'
@@ -11,6 +16,24 @@ import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker'
 import { cn } from '@/lib/utils'
 import { Button, buttonVariants } from '@/components/ui/button'
 
+/**
+ * @overview The Calendar component, built on `react-day-picker`.
+ * It provides a customizable date picker interface with various display and interaction options.
+ * 
+ * @see https://react-day-picker.js.org/
+ * 
+ * @param {object} props - The properties for the Calendar component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the calendar root.
+ * @param {object} [props.classNames] - Optional object to override default class names for various calendar elements.
+ * @param {boolean} [props.showOutsideDays=true] - Whether to show days outside the current month.
+ * @param {('label' | 'dropdown')} [props.captionLayout='label'] - Layout for the calendar caption (e.g., 'label' for text, 'dropdown' for select menus).
+ * @param {('default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link')} [props.buttonVariant='ghost'] - Variant for the navigation buttons.
+ * @param {object} [props.formatters] - Custom formatters for dates and captions.
+ * @param {object} [props.components] - Custom components for rendering parts of the calendar.
+ * @param {React.ComponentProps<typeof DayPicker>} props - All other props supported by `react-day-picker`.
+ * 
+ * @returns {JSX.Element} The Calendar component.
+ */
 function Calendar({
   className,
   classNames,
@@ -82,7 +105,6 @@ function Calendar({
           captionLayout === 'label'
             ? 'text-sm'
             : 'rounded-md pl-2 pr-1 flex items-center gap-1 text-sm h-8 [&>svg]:text-muted-foreground [&>svg]:size-3.5',
-          defaultClassNames.caption_label,
         ),
         table: 'w-full border-collapse',
         weekdays: cn('flex', defaultClassNames.weekdays),
@@ -96,7 +118,7 @@ function Calendar({
           defaultClassNames.week_number_header,
         ),
         week_number: cn(
-          'text-[0.8rem] select-none text-muted-foreground',
+          'text-muted-foreground',
           defaultClassNames.week_number,
         ),
         day: cn(
@@ -172,6 +194,18 @@ function Calendar({
   )
 }
 
+/**
+ * @overview The CalendarDayButton component.
+ * A styled button used for individual days within the Calendar, handling selection and focus states.
+ * 
+ * @param {object} props - The properties for the CalendarDayButton component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the button.
+ * @param {Date} props.day - The date object for the day this button represents.
+ * @param {object} props.modifiers - Modifiers object from `react-day-picker` indicating day states (e.g., `selected`, `focused`).
+ * @param {React.Ref<HTMLButtonElement>} ref - Ref to the underlying HTMLButtonElement.
+ * 
+ * @returns {JSX.Element} The Calendar day button component.
+ */
 function CalendarDayButton({
   className,
   day,

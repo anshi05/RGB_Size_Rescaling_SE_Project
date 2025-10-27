@@ -1,3 +1,8 @@
+/**
+ * @file components/ui/context-menu.tsx
+ * @description This file contains the ContextMenu component and its sub-components, built using Radix UI's ContextMenu primitive, providing customizable context menus.
+ * @lastUpdated 2025-10-25
+ */
 'use client'
 
 import * as React from 'react'
@@ -6,18 +11,70 @@ import { Check, ChevronRight, Circle } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * @overview The root ContextMenu component, built on Radix UI's ContextMenuPrimitive.Root.
+ * It manages the open/closed state and positioning of a context menu.
+ * 
+ * @see https://www.radix-ui.com/docs/primitives/components/context-menu
+ * 
+ * @returns {JSX.Element} The ContextMenu root component.
+ */
 const ContextMenu = ContextMenuPrimitive.Root
 
+/**
+ * @overview The ContextMenuTrigger component, built on Radix UI's ContextMenuPrimitive.Trigger.
+ * This component should wrap the element that, when right-clicked or long-pressed, opens the context menu.
+ * 
+ * @returns {JSX.Element} The ContextMenu trigger component.
+ */
 const ContextMenuTrigger = ContextMenuPrimitive.Trigger
 
+/**
+ * @overview The ContextMenuGroup component, built on Radix UI's ContextMenuPrimitive.Group.
+ * Used to group related context menu items together.
+ * 
+ * @returns {JSX.Element} The ContextMenu group component.
+ */
 const ContextMenuGroup = ContextMenuPrimitive.Group
 
+/**
+ * @overview The ContextMenuPortal component, built on Radix UI's ContextMenuPrimitive.Portal.
+ * This component renders its children into a new DOM subtree outside of the current component hierarchy,
+ * typically to ensure the context menu overlays the entire page.
+ * 
+ * @returns {JSX.Element} The ContextMenu portal component.
+ */
 const ContextMenuPortal = ContextMenuPrimitive.Portal
 
+/**
+ * @overview The ContextMenuSub component, built on Radix UI's ContextMenuPrimitive.Sub.
+ * Used for creating nested context menus (submenus).
+ * 
+ * @returns {JSX.Element} The ContextMenu sub-menu component.
+ */
 const ContextMenuSub = ContextMenuPrimitive.Sub
 
+/**
+ * @overview The ContextMenuRadioGroup component, built on Radix UI's ContextMenuPrimitive.RadioGroup.
+ * Used to group ContextMenuRadioItem components, ensuring only one item within the group can be checked at a time.
+ * 
+ * @returns {JSX.Element} The ContextMenu radio group component.
+ */
 const ContextMenuRadioGroup = ContextMenuPrimitive.RadioGroup
 
+/**
+ * @overview The ContextMenuSubTrigger component, built on Radix UI's ContextMenuPrimitive.SubTrigger.
+ * A menu item that, when hovered over, opens a nested submenu (`ContextMenuSubContent`).
+ * It includes a chevron icon to indicate the presence of a submenu.
+ * 
+ * @param {object} props - The properties for the ContextMenuSubTrigger component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the sub-trigger.
+ * @param {boolean} [props.inset] - If true, applies left padding to visually indent the item.
+ * @param {React.ReactNode} props.children - The content to display inside the sub-trigger.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The ContextMenu sub-trigger component.
+ */
 const ContextMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.SubTrigger>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubTrigger> & {
@@ -39,6 +96,16 @@ const ContextMenuSubTrigger = React.forwardRef<
 ))
 ContextMenuSubTrigger.displayName = ContextMenuPrimitive.SubTrigger.displayName
 
+/**
+ * @overview The ContextMenuSubContent component, built on Radix UI's ContextMenuPrimitive.SubContent.
+ * The content area for a nested context menu (submenu), which appears when its `ContextMenuSubTrigger` is hovered.
+ * 
+ * @param {object} props - The properties for the ContextMenuSubContent component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the sub-menu content.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The ContextMenu sub-content component.
+ */
 const ContextMenuSubContent = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.SubContent>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubContent>
@@ -54,6 +121,17 @@ const ContextMenuSubContent = React.forwardRef<
 ))
 ContextMenuSubContent.displayName = ContextMenuPrimitive.SubContent.displayName
 
+/**
+ * @overview The ContextMenuContent component, built on Radix UI's ContextMenuPrimitive.Content.
+ * The main content area of the context menu, containing all menu items, labels, and separators.
+ * It is rendered inside a `ContextMenuPortal` for correct layering.
+ * 
+ * @param {object} props - The properties for the ContextMenuContent component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the content wrapper.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The ContextMenu content component.
+ */
 const ContextMenuContent = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Content>
@@ -71,6 +149,17 @@ const ContextMenuContent = React.forwardRef<
 ))
 ContextMenuContent.displayName = ContextMenuPrimitive.Content.displayName
 
+/**
+ * @overview The ContextMenuItem component, built on Radix UI's ContextMenuPrimitive.Item.
+ * An individual, clickable item within the context menu.
+ * 
+ * @param {object} props - The properties for the ContextMenuItem component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the menu item.
+ * @param {boolean} [props.inset] - If true, applies left padding to visually indent the item.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The ContextMenu item component.
+ */
 const ContextMenuItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Item> & {
@@ -89,6 +178,18 @@ const ContextMenuItem = React.forwardRef<
 ))
 ContextMenuItem.displayName = ContextMenuPrimitive.Item.displayName
 
+/**
+ * @overview The ContextMenuCheckboxItem component, built on Radix UI's ContextMenuPrimitive.CheckboxItem.
+ * A menu item that can be checked or unchecked, typically with a checkmark icon indicating its state.
+ * 
+ * @param {object} props - The properties for the ContextMenuCheckboxItem component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the checkbox item.
+ * @param {React.ReactNode} props.children - The content to display next to the checkbox.
+ * @param {boolean} [props.checked] - The checked state of the item.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The ContextMenu checkbox item component.
+ */
 const ContextMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.CheckboxItem>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.CheckboxItem>
@@ -113,6 +214,18 @@ const ContextMenuCheckboxItem = React.forwardRef<
 ContextMenuCheckboxItem.displayName =
   ContextMenuPrimitive.CheckboxItem.displayName
 
+/**
+ * @overview The ContextMenuRadioItem component, built on Radix UI's ContextMenuPrimitive.RadioItem.
+ * A menu item that can be selected from a group of radio items, indicating a single choice.
+ * It includes a circle icon to indicate its selected state.
+ * 
+ * @param {object} props - The properties for the ContextMenuRadioItem component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the radio item.
+ * @param {React.ReactNode} props.children - The content to display next to the radio icon.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The ContextMenu radio item component.
+ */
 const ContextMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.RadioItem>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.RadioItem>
@@ -135,6 +248,17 @@ const ContextMenuRadioItem = React.forwardRef<
 ))
 ContextMenuRadioItem.displayName = ContextMenuPrimitive.RadioItem.displayName
 
+/**
+ * @overview The ContextMenuLabel component, built on Radix UI's ContextMenuPrimitive.Label.
+ * A non-interactive label used to categorize or describe a group of context menu items.
+ * 
+ * @param {object} props - The properties for the ContextMenuLabel component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the label.
+ * @param {boolean} [props.inset] - If true, applies left padding to visually indent the label.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The ContextMenu label component.
+ */
 const ContextMenuLabel = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Label>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Label> & {
@@ -153,6 +277,16 @@ const ContextMenuLabel = React.forwardRef<
 ))
 ContextMenuLabel.displayName = ContextMenuPrimitive.Label.displayName
 
+/**
+ * @overview The ContextMenuSeparator component, built on Radix UI's ContextMenuPrimitive.Separator.
+ * A visual separator used to divide groups of context menu items.
+ * 
+ * @param {object} props - The properties for the ContextMenuSeparator component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the separator.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The ContextMenu separator component.
+ */
 const ContextMenuSeparator = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Separator>
@@ -165,6 +299,15 @@ const ContextMenuSeparator = React.forwardRef<
 ))
 ContextMenuSeparator.displayName = ContextMenuPrimitive.Separator.displayName
 
+/**
+ * @overview The ContextMenuShortcut component.
+ * Displays a keyboard shortcut associated with a context menu item, usually aligned to the right.
+ * 
+ * @param {object} props - The properties for the ContextMenuShortcut component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the shortcut text.
+ * 
+ * @returns {JSX.Element} The ContextMenu shortcut component.
+ */
 const ContextMenuShortcut = ({
   className,
   ...props

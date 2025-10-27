@@ -1,3 +1,8 @@
+/**
+ * @file components/ui/sonner.tsx
+ * @description This file contains the Toaster component, which wraps the `sonner` library's Toaster to display elegant and accessible toast notifications.
+ * @lastUpdated 2025-10-25
+ */
 'use client'
 
 import { useTheme } from 'next-themes'
@@ -5,6 +10,18 @@ import { Toaster as Sonner } from 'sonner'
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
+/**
+ * @overview The Toaster component.
+ * This component is a wrapper around the `sonner` library's Toaster, providing a customizable and themable toast notification system.
+ * It integrates with `next-themes` to support light/dark mode themes for toasts.
+ * 
+ * @see https://sonner.emilkowal.ski/
+ * 
+ * @param {object} props - The properties for the Toaster component.
+ * @param {React.ComponentProps<typeof Sonner>} props - All other props supported by the `sonner` Toaster component.
+ * 
+ * @returns {JSX.Element} The Toaster component.
+ */
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = 'system' } = useTheme()
 

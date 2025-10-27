@@ -1,3 +1,8 @@
+/**
+ * @file components/ui/sidebar.tsx
+ * @description This file provides a comprehensive Sidebar component system, offering various layouts, collapsible behaviors, and sub-components for navigation and content display.
+ * @lastUpdated 2025-10-25
+ */
 'use client'
 
 import * as React from 'react'
@@ -19,13 +24,41 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
+/**
+ * @constant {string} SIDEBAR_COOKIE_NAME - The name of the cookie used to store the sidebar's state (expanded/collapsed).
+ */
 const SIDEBAR_COOKIE_NAME = 'sidebar:state'
+/**
+ * @constant {number} SIDEBAR_COOKIE_MAX_AGE - The maximum age of the sidebar state cookie in seconds (7 days).
+ */
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
+/**
+ * @constant {string} SIDEBAR_WIDTH - The default width of the sidebar when expanded on desktop.
+ */
 const SIDEBAR_WIDTH = '16rem'
+/**
+ * @constant {string} SIDEBAR_WIDTH_MOBILE - The width of the sidebar when opened on mobile.
+ */
 const SIDEBAR_WIDTH_MOBILE = '18rem'
+/**
+ * @constant {string} SIDEBAR_WIDTH_ICON - The width of the sidebar when collapsed to icon-only mode.
+ */
 const SIDEBAR_WIDTH_ICON = '3rem'
+/**
+ * @constant {string} SIDEBAR_KEYBOARD_SHORTCUT - The keyboard shortcut key to toggle the sidebar (e.g., 'b' for Ctrl+B or Cmd+B).
+ */
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
 
+/**
+ * @typedef {object} SidebarContext
+ * @property {('expanded' | 'collapsed')} state - The current state of the sidebar (expanded or collapsed).
+ * @property {boolean} open - Indicates if the sidebar is currently open.
+ * @property {(open: boolean) => void} setOpen - Function to set the open state of the sidebar.
+ * @property {boolean} openMobile - Indicates if the mobile sidebar (Sheet) is currently open.
+ * @property {(open: boolean) => void} setOpenMobile - Function to set the open state of the mobile sidebar.
+ * @property {boolean} isMobile - Indicates if the current viewport is considered mobile.
+ * @property {() => void} toggleSidebar - Function to toggle the sidebar's open/collapsed state.
+ */
 type SidebarContext = {
   state: 'expanded' | 'collapsed'
   open: boolean
@@ -36,8 +69,18 @@ type SidebarContext = {
   toggleSidebar: () => void
 }
 
+/**
+ * @constant {React.Context<SidebarContext | null>} SidebarContext - React context for providing sidebar state and functions to its children.
+ */
 const SidebarContext = React.createContext<SidebarContext | null>(null)
 
+/**
+ * @overview Custom hook to access the sidebar context.
+ * Throws an error if used outside of a `SidebarProvider`.
+ * 
+ * @returns {SidebarContext} The current sidebar context.
+ * @throws {Error} If `useSidebar` is not used within a `SidebarProvider`.
+ */
 function useSidebar() {
   const context = React.useContext(SidebarContext)
   if (!context) {
@@ -47,6 +90,22 @@ function useSidebar() {
   return context
 }
 
+/**
+ * @overview The SidebarProvider component.
+ * This component provides the context for the entire sidebar system, managing its open/collapsed state,
+ * mobile responsiveness, and keyboard shortcuts.
+ * 
+ * @param {object} props - The properties for the SidebarProvider component.
+ * @param {boolean} [props.defaultOpen=true] - The initial open state of the sidebar on desktop.
+ * @param {boolean} [props.open] - Controlled open state of the sidebar.
+ * @param {(open: boolean) => void} [props.onOpenChange] - Callback fired when the open state changes.
+ * @param {string} [props.className] - Optional CSS class names to apply to the provider's root div.
+ * @param {React.CSSProperties} [props.style] - Optional inline CSS styles.
+ * @param {React.ReactNode} props.children - The child elements to be rendered within the sidebar system.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The SidebarProvider component.
+ */
 const SidebarProvider = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> & {
@@ -164,6 +223,22 @@ const SidebarProvider = React.forwardRef<
 )
 SidebarProvider.displayName = 'SidebarProvider'
 
+/**
+ * @overview The Sidebar component.
+ * This component renders the main sidebar layout, which can be positioned on the left or right,
+ * have different visual variants (sidebar, floating, inset), and various collapsible behaviors.
+ * It adapts its rendering based on whether the device is mobile or desktop.
+ * 
+ * @param {object} props - The properties for the Sidebar component.
+ * @param {('left' | 'right')} [props.side='left'] - The side of the screen the sidebar appears on.
+ * @param {('sidebar' | 'floating' | 'inset')} [props.variant='sidebar'] - The visual style variant of the sidebar.
+ * @param {('offcanvas' | 'icon' | 'none')} [props.collapsible='offcanvas'] - The collapsible behavior of the sidebar.
+ * @param {string} [props.className] - Optional CSS class names to apply to the sidebar container.
+ * @param {React.ReactNode} props.children - The child elements to be rendered inside the sidebar.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Sidebar component.
+ */
 const Sidebar = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> & {
@@ -267,6 +342,18 @@ const Sidebar = React.forwardRef<
 )
 Sidebar.displayName = 'Sidebar'
 
+/**
+ * @overview The SidebarTrigger component.
+ * A button that, when clicked, toggles the sidebar's visibility or collapsed state.
+ * It typically displays an icon like `PanelLeft`.
+ * 
+ * @param {object} props - The properties for the SidebarTrigger component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the button.
+ * @param {Function} [props.onClick] - Optional click handler to be executed before the sidebar toggle.
+ * @param {React.Ref<HTMLButtonElement>} ref - Ref to the underlying HTMLButtonElement.
+ * 
+ * @returns {JSX.Element} The SidebarTrigger component.
+ */
 const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
@@ -293,6 +380,17 @@ const SidebarTrigger = React.forwardRef<
 })
 SidebarTrigger.displayName = 'SidebarTrigger'
 
+/**
+ * @overview The SidebarRail component.
+ * A draggable handle that allows users to resize or toggle the sidebar, particularly in collapsible modes.
+ * It has a hidden visual indicator that appears on hover.
+ * 
+ * @param {object} props - The properties for the SidebarRail component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the rail.
+ * @param {React.Ref<HTMLButtonElement>} ref - Ref to the underlying HTMLButtonElement.
+ * 
+ * @returns {JSX.Element} The SidebarRail component.
+ */
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<'button'>
@@ -322,6 +420,17 @@ const SidebarRail = React.forwardRef<
 })
 SidebarRail.displayName = 'SidebarRail'
 
+/**
+ * @overview The SidebarInset component.
+ * This component is intended to wrap the main content area when the sidebar has an 'inset' variant.
+ * It provides responsive styling for the content area to adjust to the sidebar's presence.
+ * 
+ * @param {object} props - The properties for the SidebarInset component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the main content element.
+ * @param {React.Ref<HTMLElement>} ref - Ref to the underlying HTMLMainElement.
+ * 
+ * @returns {JSX.Element} The SidebarInset component.
+ */
 const SidebarInset = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'main'>
@@ -340,6 +449,16 @@ const SidebarInset = React.forwardRef<
 })
 SidebarInset.displayName = 'SidebarInset'
 
+/**
+ * @overview The SidebarInput component.
+ * A styled input field specifically designed for use within the sidebar, often for search or filtering.
+ * 
+ * @param {object} props - The properties for the SidebarInput component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the input element.
+ * @param {React.Ref<HTMLInputElement>} ref - Ref to the underlying HTMLInputElement.
+ * 
+ * @returns {JSX.Element} The SidebarInput component.
+ */
 const SidebarInput = React.forwardRef<
   React.ElementRef<typeof Input>,
   React.ComponentProps<typeof Input>
@@ -358,6 +477,16 @@ const SidebarInput = React.forwardRef<
 })
 SidebarInput.displayName = 'SidebarInput'
 
+/**
+ * @overview The SidebarHeader component.
+ * A container for the header section of the sidebar, typically holding titles, logos, or controls.
+ * 
+ * @param {object} props - The properties for the SidebarHeader component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the header div.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The SidebarHeader component.
+ */
 const SidebarHeader = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'>
@@ -373,6 +502,16 @@ const SidebarHeader = React.forwardRef<
 })
 SidebarHeader.displayName = 'SidebarHeader'
 
+/**
+ * @overview The SidebarFooter component.
+ * A container for the footer section of the sidebar, typically holding action buttons or metadata.
+ * 
+ * @param {object} props - The properties for the SidebarFooter component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the footer div.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The SidebarFooter component.
+ */
 const SidebarFooter = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'>
@@ -388,6 +527,16 @@ const SidebarFooter = React.forwardRef<
 })
 SidebarFooter.displayName = 'SidebarFooter'
 
+/**
+ * @overview The SidebarSeparator component.
+ * A visual separator used to divide sections within the sidebar, typically a horizontal line.
+ * 
+ * @param {object} props - The properties for the SidebarSeparator component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the separator.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The SidebarSeparator component.
+ */
 const SidebarSeparator = React.forwardRef<
   React.ElementRef<typeof Separator>,
   React.ComponentProps<typeof Separator>
@@ -403,6 +552,16 @@ const SidebarSeparator = React.forwardRef<
 })
 SidebarSeparator.displayName = 'SidebarSeparator'
 
+/**
+ * @overview The SidebarContent component.
+ * The main scrollable content area of the sidebar, where menu items, groups, and other components are rendered.
+ * 
+ * @param {object} props - The properties for the SidebarContent component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the content div.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The SidebarContent component.
+ */
 const SidebarContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'>
@@ -421,6 +580,16 @@ const SidebarContent = React.forwardRef<
 })
 SidebarContent.displayName = 'SidebarContent'
 
+/**
+ * @overview The SidebarGroup component.
+ * A container for grouping related menu items or other content within the sidebar.
+ * 
+ * @param {object} props - The properties for the SidebarGroup component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the group div.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The SidebarGroup component.
+ */
 const SidebarGroup = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'>
@@ -436,6 +605,17 @@ const SidebarGroup = React.forwardRef<
 })
 SidebarGroup.displayName = 'SidebarGroup'
 
+/**
+ * @overview The SidebarGroupLabel component.
+ * A label for a `SidebarGroup`, typically displayed as a heading for the group.
+ * 
+ * @param {object} props - The properties for the SidebarGroupLabel component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the label.
+ * @param {boolean} [props.asChild=false] - If true, the component will render its child as a slot, passing its props down.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The SidebarGroupLabel component.
+ */
 const SidebarGroupLabel = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> & { asChild?: boolean }
@@ -457,6 +637,17 @@ const SidebarGroupLabel = React.forwardRef<
 })
 SidebarGroupLabel.displayName = 'SidebarGroupLabel'
 
+/**
+ * @overview The SidebarGroupAction component.
+ * A button typically displayed within a `SidebarGroupLabel`, often used for actions related to the group.
+ * 
+ * @param {object} props - The properties for the SidebarGroupAction component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the action button.
+ * @param {boolean} [props.asChild=false] - If true, the component will render its child as a slot, passing its props down.
+ * @param {React.Ref<HTMLButtonElement>} ref - Ref to the underlying HTMLButtonElement.
+ * 
+ * @returns {JSX.Element} The SidebarGroupAction component.
+ */
 const SidebarGroupAction = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<'button'> & { asChild?: boolean }
@@ -480,6 +671,16 @@ const SidebarGroupAction = React.forwardRef<
 })
 SidebarGroupAction.displayName = 'SidebarGroupAction'
 
+/**
+ * @overview The SidebarGroupContent component.
+ * A container for the actual content within a `SidebarGroup`, such as menu items.
+ * 
+ * @param {object} props - The properties for the SidebarGroupContent component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the content div.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The SidebarGroupContent component.
+ */
 const SidebarGroupContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'>
@@ -493,6 +694,16 @@ const SidebarGroupContent = React.forwardRef<
 ))
 SidebarGroupContent.displayName = 'SidebarGroupContent'
 
+/**
+ * @overview The SidebarMenu component.
+ * An unordered list (`<ul>`) used for displaying a collection of `SidebarMenuItem` components.
+ * 
+ * @param {object} props - The properties for the SidebarMenu component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the ul element.
+ * @param {React.Ref<HTMLUListElement>} ref - Ref to the underlying HTMLUListElement.
+ * 
+ * @returns {JSX.Element} The SidebarMenu component.
+ */
 const SidebarMenu = React.forwardRef<
   HTMLUListElement,
   React.ComponentProps<'ul'>
@@ -506,6 +717,16 @@ const SidebarMenu = React.forwardRef<
 ))
 SidebarMenu.displayName = 'SidebarMenu'
 
+/**
+ * @overview The SidebarMenuItem component.
+ * An individual list item (`<li>`) within a `SidebarMenu`, typically containing a `SidebarMenuButton`.
+ * 
+ * @param {object} props - The properties for the SidebarMenuItem component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the li element.
+ * @param {React.Ref<HTMLLIElement>} ref - Ref to the underlying HTMLLIElement.
+ * 
+ * @returns {JSX.Element} The SidebarMenuItem component.
+ */
 const SidebarMenuItem = React.forwardRef<
   HTMLLIElement,
   React.ComponentProps<'li'>
@@ -519,6 +740,23 @@ const SidebarMenuItem = React.forwardRef<
 ))
 SidebarMenuItem.displayName = 'SidebarMenuItem'
 
+/**
+ * @overview Defines the visual variants for the SidebarMenuButton component, including different styles and sizes, using `cva` (class-variance-authority).
+ * It provides common styling for menu buttons within the sidebar.
+ * 
+ * @constant {Function} sidebarMenuButtonVariants - A function that generates Tailwind CSS classes for the menu button.
+ * @property {object} variants - Defines the available variants for the menu button.
+ * @property {object} variants.variant - Specifies the visual style of the button.
+ * @property {string} variants.variant.default - Default styling for a menu button.
+ * @property {string} variants.variant.outline - Outline styling for a menu button.
+ * @property {object} variants.size - Specifies the size of the button.
+ * @property {string} variants.size.default - Default size for the button.
+ * @property {string} variants.size.sm - Small size for the button.
+ * @property {string} variants.size.lg - Large size for the button.
+ * @property {object} defaultVariants - Defines the default variant and size for the menu button.
+ * @property {string} defaultVariants.variant - The default visual variant for menu buttons (e.g., 'default').
+ * @property {string} defaultVariants.size - The default size for menu buttons (e.g., 'default').
+ */
 const sidebarMenuButtonVariants = cva(
   'peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
   {
@@ -541,6 +779,22 @@ const sidebarMenuButtonVariants = cva(
   },
 )
 
+/**
+ * @overview The SidebarMenuButton component.
+ * A styled button component for use within `SidebarMenu`.
+ * It supports different variants, sizes, active states, and optional tooltips.
+ * 
+ * @param {object} props - The properties for the SidebarMenuButton component.
+ * @param {boolean} [props.asChild=false] - If true, the component will render its child as a slot, passing its props down.
+ * @param {boolean} [props.isActive=false] - If true, the button will be styled as active.
+ * @param {('default' | 'outline')} [props.variant='default'] - The visual style variant of the button.
+ * @param {('default' | 'sm' | 'lg')} [props.size='default'] - The size variant of the button.
+ * @param {string | React.ComponentProps<typeof TooltipContent>} [props.tooltip] - Optional tooltip content for the button. Can be a string or `TooltipContent` props.
+ * @param {string} [props.className] - Optional CSS class names to apply to the button.
+ * @param {React.Ref<HTMLButtonElement>} ref - Ref to the underlying HTMLButtonElement.
+ * 
+ * @returns {JSX.Element} The SidebarMenuButton component.
+ */
 const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<'button'> & {
@@ -600,6 +854,18 @@ const SidebarMenuButton = React.forwardRef<
 )
 SidebarMenuButton.displayName = 'SidebarMenuButton'
 
+/**
+ * @overview The SidebarMenuAction component.
+ * A button component for actions related to a `SidebarMenuItem`, typically displayed on hover.
+ * 
+ * @param {object} props - The properties for the SidebarMenuAction component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the action button.
+ * @param {boolean} [props.asChild=false] - If true, the component will render its child as a slot, passing its props down.
+ * @param {boolean} [props.showOnHover=false] - If true, the action button will only be visible on hover of the parent `SidebarMenuItem`.
+ * @param {React.Ref<HTMLButtonElement>} ref - Ref to the underlying HTMLButtonElement.
+ * 
+ * @returns {JSX.Element} The SidebarMenuAction component.
+ */
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<'button'> & {
@@ -631,6 +897,16 @@ const SidebarMenuAction = React.forwardRef<
 })
 SidebarMenuAction.displayName = 'SidebarMenuAction'
 
+/**
+ * @overview The SidebarMenuBadge component.
+ * A small badge component for displaying counts or status within a `SidebarMenuItem`.
+ * 
+ * @param {object} props - The properties for the SidebarMenuBadge component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the badge.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The SidebarMenuBadge component.
+ */
 const SidebarMenuBadge = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'>
@@ -652,6 +928,17 @@ const SidebarMenuBadge = React.forwardRef<
 ))
 SidebarMenuBadge.displayName = 'SidebarMenuBadge'
 
+/**
+ * @overview The SidebarMenuSkeleton component.
+ * A skeleton loading state for menu items within the sidebar, providing a visual placeholder while content is loading.
+ * 
+ * @param {object} props - The properties for the SidebarMenuSkeleton component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the skeleton container.
+ * @param {boolean} [props.showIcon=false] - If true, displays a placeholder icon within the skeleton.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The SidebarMenuSkeleton component.
+ */
 const SidebarMenuSkeleton = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> & {
@@ -690,6 +977,16 @@ const SidebarMenuSkeleton = React.forwardRef<
 })
 SidebarMenuSkeleton.displayName = 'SidebarMenuSkeleton'
 
+/**
+ * @overview The SidebarMenuSub component.
+ * An unordered list (`<ul>`) used for displaying nested menu items, typically indented and with a visual border.
+ * 
+ * @param {object} props - The properties for the SidebarMenuSub component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the ul element.
+ * @param {React.Ref<HTMLUListElement>} ref - Ref to the underlying HTMLUListElement.
+ * 
+ * @returns {JSX.Element} The SidebarMenuSub component.
+ */
 const SidebarMenuSub = React.forwardRef<
   HTMLUListElement,
   React.ComponentProps<'ul'>
@@ -707,12 +1004,35 @@ const SidebarMenuSub = React.forwardRef<
 ))
 SidebarMenuSub.displayName = 'SidebarMenuSub'
 
+/**
+ * @overview The SidebarMenuSubItem component.
+ * An individual list item (`<li>`) within a `SidebarMenuSub`, used for nested menu items.
+ * 
+ * @param {object} props - The properties for the SidebarMenuSubItem component.
+ * @param {React.Ref<HTMLLIElement>} ref - Ref to the underlying HTMLLIElement.
+ * 
+ * @returns {JSX.Element} The SidebarMenuSubItem component.
+ */
 const SidebarMenuSubItem = React.forwardRef<
   HTMLLIElement,
   React.ComponentProps<'li'>
 >(({ ...props }, ref) => <li ref={ref} {...props} />)
 SidebarMenuSubItem.displayName = 'SidebarMenuSubItem'
 
+/**
+ * @overview The SidebarMenuSubButton component.
+ * A styled anchor (`<a>`) or button component for use within `SidebarMenuSub`.
+ * It supports different sizes, active states, and behaves as a navigation link.
+ * 
+ * @param {object} props - The properties for the SidebarMenuSubButton component.
+ * @param {boolean} [props.asChild=false] - If true, the component will render its child as a slot, passing its props down.
+ * @param {('sm' | 'md')} [props.size='md'] - The size variant of the button.
+ * @param {boolean} [props.isActive] - If true, the button will be styled as active.
+ * @param {string} [props.className] - Optional CSS class names to apply to the button.
+ * @param {React.Ref<HTMLAnchorElement>} ref - Ref to the underlying HTMLAnchorElement.
+ * 
+ * @returns {JSX.Element} The SidebarMenuSubButton component.
+ */
 const SidebarMenuSubButton = React.forwardRef<
   HTMLAnchorElement,
   React.ComponentProps<'a'> & {

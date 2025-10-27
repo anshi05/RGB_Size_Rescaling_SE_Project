@@ -1,3 +1,8 @@
+/**
+ * @file components/ui/toaster.tsx
+ * @description This file contains the Toaster component, which renders a list of active toast notifications using Radix UI's Toast primitives.
+ * @lastUpdated 2025-10-25
+ */
 'use client'
 
 import { useToast } from '@/hooks/use-toast'
@@ -10,6 +15,13 @@ import {
   ToastViewport,
 } from '@/components/ui/toast'
 
+/**
+ * @overview The Toaster component.
+ * This component is responsible for rendering all active toast notifications managed by the `useToast` hook.
+ * It utilizes Radix UI's ToastProvider and ToastViewport for accessibility and positioning.
+ * 
+ * @returns {JSX.Element} The Toaster component, rendering a list of toast notifications.
+ */
 export function Toaster() {
   const { toasts } = useToast()
 

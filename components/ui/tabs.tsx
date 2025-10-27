@@ -1,3 +1,8 @@
+/**
+ * @file components/ui/tabs.tsx
+ * @description This file contains the Tabs component and its sub-components, built using Radix UI's Tabs primitive, providing accessible and customizable tabbed interfaces.
+ * @lastUpdated 2025-10-25
+ */
 'use client'
 
 import * as React from 'react'
@@ -5,8 +10,26 @@ import * as TabsPrimitive from '@radix-ui/react-tabs'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * @overview The root Tabs component, built on Radix UI's TabsPrimitive.Root.
+ * It manages the active tab state and accessibility for a tabbed interface.
+ * 
+ * @see https://www.radix-ui.com/docs/primitives/components/tabs
+ * 
+ * @returns {JSX.Element} The Tabs root component.
+ */
 const Tabs = TabsPrimitive.Root
 
+/**
+ * @overview The TabsList component, built on Radix UI's TabsPrimitive.List.
+ * A container for `TabsTrigger` components, typically displayed horizontally.
+ * 
+ * @param {object} props - The properties for the TabsList component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the list container.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Tabs list component.
+ */
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
@@ -22,6 +45,16 @@ const TabsList = React.forwardRef<
 ))
 TabsList.displayName = TabsPrimitive.List.displayName
 
+/**
+ * @overview The TabsTrigger component, built on Radix UI's TabsPrimitive.Trigger.
+ * An interactive button that, when activated, displays its associated `TabsContent` and marks itself as active.
+ * 
+ * @param {object} props - The properties for the TabsTrigger component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the trigger button.
+ * @param {React.Ref<HTMLButtonElement>} ref - Ref to the underlying HTMLButtonElement.
+ * 
+ * @returns {JSX.Element} The Tabs trigger component.
+ */
 const TabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
@@ -37,6 +70,16 @@ const TabsTrigger = React.forwardRef<
 ))
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
+/**
+ * @overview The TabsContent component, built on Radix UI's TabsPrimitive.Content.
+ * The content area associated with a `TabsTrigger`. It is displayed only when its corresponding trigger is active.
+ * 
+ * @param {object} props - The properties for the TabsContent component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the content area.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The Tabs content component.
+ */
 const TabsContent = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>

@@ -1,3 +1,8 @@
+/**
+ * @file components/ui/chart.tsx
+ * @description This file provides a robust and customizable charting solution built on Recharts, offering a wide range of chart types and interactive features.
+ * @lastUpdated 2025-10-25
+ */
 'use client'
 
 import * as React from 'react'
@@ -5,9 +10,22 @@ import * as RechartsPrimitive from 'recharts'
 
 import { cn } from '@/lib/utils'
 
-// Format: { THEME_NAME: CSS_SELECTOR }
+/**
+ * @overview Defines the available themes and their corresponding CSS selectors for chart styling.
+ * @constant {object} THEMES
+ * @property {string} light - CSS selector for the light theme.
+ * @property {string} dark - CSS selector for the dark theme.
+ */
 const THEMES = { light: '', dark: '.dark' } as const
 
+/**
+ * @typedef {object} ChartConfig
+ * @property {object} [k] - Dynamic keys representing different data series or elements in the chart.
+ * @property {React.ReactNode} [k.label] - A human-readable label for the chart element.
+ * @property {React.ComponentType} [k.icon] - An optional icon component to represent the chart element.
+ * @property {string} [k.color] - The color for the chart element (if not using theme-based colors).
+ * @property {Record<keyof typeof THEMES, string>} [k.theme] - Theme-specific colors for the chart element.
+ */
 export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode
@@ -18,12 +36,23 @@ export type ChartConfig = {
   )
 }
 
+/**
+ * @typedef {object} ChartContextProps
+ * @property {ChartConfig} config - The chart configuration object.
+ */
 type ChartContextProps = {
   config: ChartConfig
 }
 
 const ChartContext = React.createContext<ChartContextProps | null>(null)
 
+/**
+ * @overview A hook to access the Chart context.
+ * Must be used within a `<ChartContainer />` component.
+ * 
+ * @throws {Error} If used outside of a `<ChartContainer />` component.
+ * @returns {ChartContextProps} The chart context object.
+ */
 function useChart() {
   const context = React.useContext(ChartContext)
 
@@ -34,6 +63,20 @@ function useChart() {
   return context
 }
 
+/**
+ * @overview The ChartContainer component.
+ * This is the main container for all Recharts-based charts, providing context for chart configuration and styling.
+ * It also handles responsive rendering of the charts.
+ * 
+ * @param {object} props - The properties for the ChartContainer component.
+ * @param {string} [props.id] - An optional ID for the chart container. A unique ID will be generated if not provided.
+ * @param {string} [props.className] - Optional CSS class names to apply to the container.
+ * @param {React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['children']} props.children - The Recharts components to be rendered within the responsive container.
+ * @param {ChartConfig} props.config - The configuration object for the chart, defining labels, icons, and colors.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element} The ChartContainer component.
+ */
 const ChartContainer = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> & {
@@ -67,6 +110,16 @@ const ChartContainer = React.forwardRef<
 })
 ChartContainer.displayName = 'Chart'
 
+/**
+ * @overview The ChartStyle component.
+ * Dynamically generates a `<style>` block to apply theme-aware colors to chart elements based on the provided `ChartConfig`.
+ * 
+ * @param {object} props - The properties for the ChartStyle component.
+ * @param {string} props.id - The unique ID of the chart to which these styles apply.
+ * @param {ChartConfig} props.config - The chart configuration object containing color definitions.
+ * 
+ * @returns {JSX.Element | null} The style element or null if no color configuration is present.
+ */
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
     ([_, config]) => config.theme || config.color,
@@ -100,8 +153,39 @@ ${colorConfig
   )
 }
 
+/**
+ * @overview Re-export of the `RechartsPrimitive.Tooltip` component.
+ * Used to display detailed information about a data point when hovered over on a chart.
+ * 
+ * @see http://recharts.org/en-US/api/Tooltip
+ * 
+ * @returns {JSX.Element} The ChartTooltip component.
+ */
 const ChartTooltip = RechartsPrimitive.Tooltip
 
+/**
+ * @overview The ChartTooltipContent component.
+ * Provides customizable content for chart tooltips, displaying data point information with optional icons and formatting.
+ * It dynamically adjusts based on active payload and chart configuration.
+ * 
+ * @param {object} props - The properties for the ChartTooltipContent component.
+ * @param {boolean} [props.active] - Indicates if the tooltip is active and should be displayed.
+ * @param {Array} [props.payload] - The data payload for the tooltip, containing information about hovered data points.
+ * @param {string} [props.className] - Optional CSS class names to apply to the tooltip content wrapper.
+ * @param {('line' | 'dot' | 'dashed')} [props.indicator='dot'] - The style of the indicator for each data item (line, dot, or dashed).
+ * @param {boolean} [props.hideLabel=false] - If true, the main label of the tooltip will be hidden.
+ * @param {boolean} [props.hideIndicator=false] - If true, the color indicator next to each item will be hidden.
+ * @param {React.ReactNode} [props.label] - The main label to display at the top of the tooltip.
+ * @param {Function} [props.labelFormatter] - A formatter function for the main label.
+ * @param {string} [props.labelClassName] - Optional CSS class names for the main label.
+ * @param {Function} [props.formatter] - A formatter function for individual payload values.
+ * @param {string} [props.color] - A default color to use for indicators if not specified in the payload or config.
+ * @param {string} [props.nameKey] - The key to use for extracting the name from payload items.
+ * @param {string} [props.labelKey] - The key to use for extracting the label from payload items.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element | null} The ChartTooltipContent component or null if not active or no payload.
+ */
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
@@ -256,8 +340,30 @@ const ChartTooltipContent = React.forwardRef<
 )
 ChartTooltipContent.displayName = 'ChartTooltip'
 
+/**
+ * @overview Re-export of the `RechartsPrimitive.Legend` component.
+ * Used to display a legend for the chart data series.
+ * 
+ * @see http://recharts.org/en-US/api/Legend
+ * 
+ * @returns {JSX.Element} The ChartLegend component.
+ */
 const ChartLegend = RechartsPrimitive.Legend
 
+/**
+ * @overview The ChartLegendContent component.
+ * Provides customizable content for chart legends, displaying series names, icons, and colors based on chart configuration.
+ * 
+ * @param {object} props - The properties for the ChartLegendContent component.
+ * @param {string} [props.className] - Optional CSS class names to apply to the legend container.
+ * @param {boolean} [props.hideIcon=false] - If true, the icon next to each legend item will be hidden.
+ * @param {Array} [props.payload] - The data payload for the legend, containing information about data series.
+ * @param {('top' | 'bottom' | 'left' | 'right' | 'middle')} [props.verticalAlign='bottom'] - Vertical alignment of the legend.
+ * @param {string} [props.nameKey] - The key to use for extracting the name from payload items.
+ * @param {React.Ref<HTMLDivElement>} ref - Ref to the underlying HTMLDivElement.
+ * 
+ * @returns {JSX.Element | null} The ChartLegendContent component or null if no payload.
+ */
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> &
@@ -316,7 +422,16 @@ const ChartLegendContent = React.forwardRef<
 )
 ChartLegendContent.displayName = 'ChartLegend'
 
-// Helper to extract item config from a payload.
+/**
+ * @overview Helper function to extract item configuration from a payload based on `ChartConfig`.
+ * It looks up the configuration for a given key within the chart's config, considering potential nested payload structures.
+ * 
+ * @param {ChartConfig} config - The overall chart configuration object.
+ * @param {unknown} payload - The raw payload object from Recharts (e.g., from Tooltip or Legend).
+ * @param {string} key - The key to use for looking up the item configuration in `config`.
+ * 
+ * @returns {object | undefined} The configuration object for the specified item, or `undefined` if not found.
+ */
 function getPayloadConfigFromPayload(
   config: ChartConfig,
   payload: unknown,

@@ -2,7 +2,7 @@
  * @file hooks/use-toast.ts
  * @author Anshi
  * @description Custom hook for managing and displaying toast notifications.
- * @lastUpdated 2025-10-21
+ * @lastUpdated 2025-10-25
  */
 'use client'
 
@@ -11,9 +11,24 @@ import * as React from 'react'
 
 import type { ToastActionElement, ToastProps } from '@/components/ui/toast'
 
+/**
+ * @constant {number} TOAST_LIMIT - The maximum number of toasts to display at any given time.
+ */
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+/**
+ * @constant {number} TOAST_REMOVE_DELAY - The delay in milliseconds before a dismissed toast is removed from the DOM.
+ * @note This value was changed by the user in a previous step from 1,000,000ms to 1,000ms.
+ */
+const TOAST_REMOVE_DELAY = 1000
 
+/**
+ * @typedef {object} ToasterToast
+ * @property {string} id - A unique identifier for the toast.
+ * @property {React.ReactNode} [title] - The title of the toast.
+ * @property {React.ReactNode} [description] - The description text of the toast.
+ * @property {ToastActionElement} [action] - An optional action button for the toast.
+ * @augments ToastProps
+ */
 type ToasterToast = ToastProps & {
   id: string
   title?: React.ReactNode
@@ -21,6 +36,13 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement
 }
 
+/**
+ * @constant {object} actionTypes - Defines the types of actions that can be dispatched to the toast reducer.
+ * @property {string} ADD_TOAST - Action type for adding a new toast.
+ * @property {string} UPDATE_TOAST - Action type for updating an existing toast.
+ * @property {string} DISMISS_TOAST - Action type for dismissing a toast (triggers exit animation).
+ * @property {string} REMOVE_TOAST - Action type for removing a toast from the DOM (after dismissal).
+ */
 const actionTypes = {
   ADD_TOAST: 'ADD_TOAST',
   UPDATE_TOAST: 'UPDATE_TOAST',
@@ -43,6 +65,13 @@ function genId() {
 
 type ActionType = typeof actionTypes
 
+/**
+ * @typedef {object} Action
+ * @description Represents an action that can be dispatched to modify the toast state.
+ * @property {string} type - The type of action (e.g., 'ADD_TOAST', 'UPDATE_TOAST').
+ * @property {ToasterToast} [toast] - The toast object (for ADD_TOAST and UPDATE_TOAST).
+ * @property {string} [toastId] - The ID of the toast to target (for DISMISS_TOAST and REMOVE_TOAST).
+ */
 type Action =
   | {
       type: ActionType['ADD_TOAST']
@@ -61,6 +90,11 @@ type Action =
       toastId?: ToasterToast['id']
     }
 
+/**
+ * @interface State
+ * @description Represents the state structure managed by the toast reducer.
+ * @property {ToasterToast[]} toasts - An array of active toast notifications.
+ */
 interface State {
   toasts: ToasterToast[]
 }
@@ -160,8 +194,15 @@ export const reducer = (state: State, action: Action): State => {
   }
 }
 
+/**
+ * @constant {Array<Function>} listeners - An array of functions (setState dispatchers) that are notified when the global toast state changes.
+ */
 const listeners: Array<(state: State) => void> = []
 
+/**
+ * @var {State} memoryState - The current global state of toast notifications, initialized as an empty array of toasts.
+ * This state is updated by the `dispatch` function and accessed by `useToast`.
+ */
 let memoryState: State = { toasts: [] }
 
 /**
@@ -180,6 +221,10 @@ function dispatch(action: Action) {
   })
 }
 
+/**
+ * @typedef {Omit<ToasterToast, 'id'>} Toast
+ * @description Represents a toast notification without the `id` property, used when creating new toasts.
+ */
 type Toast = Omit<ToasterToast, 'id'>
 
 /**
