@@ -12,7 +12,7 @@ import { NextResponse } from 'next/server'
  * @overview Handles the authentication callback from Supabase. It exchanges the authorization code for a session
  * and redirects the user to the origin URL after the sign-in process is complete.
  * 
- * @param {Request} request - The incoming Next.js request object, containing the authorization code in search parameters.
+ * @param {import("next/server").NextRequest} request - The incoming Next.js request object, containing the authorization code in search parameters.
  * @returns {NextResponse} A Next.js redirect response to the origin URL.
  */
 export async function GET(request) {
@@ -20,9 +20,7 @@ export async function GET(request) {
   const code = requestUrl.searchParams.get('code')
 
   if (code) {
-    // Create a Supabase client with the request's cookies
     const supabase = createRouteHandlerClient({ cookies })
-    // Exchange the authorization code for a user session
     await supabase.auth.exchangeCodeForSession(code)
   }
 

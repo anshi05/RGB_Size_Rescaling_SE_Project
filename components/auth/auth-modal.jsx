@@ -235,12 +235,12 @@ export function AuthModal({ isOpen, onClose, onSuccess }) {
           <div className="space-y-3 text-center">
             {mode === "signin" && (
               <>
-                {/* <button
+                <button
                   onClick={() => switchMode("reset")}
                   className="text-sm text-rose-600 hover:text-rose-700 font-medium"
                 >
                   Forgot your password?
-                </button> */}
+                </button>
                 <p className="text-sm text-gray-600">
                   Don’t have an account?{" "}
                   <button
