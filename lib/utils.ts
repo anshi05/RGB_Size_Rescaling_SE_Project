@@ -22,3 +22,29 @@ export function cn(...inputs: ClassValue[]) {
   // Use clsx to conditionally join class names, then twMerge to resolve conflicts
   return twMerge(clsx(inputs))
 }
+
+/**
+ * @overview Validates a given password against a set of security rules.
+ * The rules include minimum length, presence of uppercase letters, lowercase letters, numbers, and special characters.
+ * 
+ * @param {string} password - The password string to validate.
+ * @returns {string | null} An error message if the password is invalid, otherwise null.
+ */
+export function validatePassword(password: string): string | null {
+  if (password.length < 8) {
+    return "Password must be at least 8 characters long."
+  }
+  if (!/[A-Z]/.test(password)) {
+    return "Password must contain at least one uppercase letter."
+  }
+  if (!/[a-z]/.test(password)) {
+    return "Password must contain at least one lowercase letter."
+  }
+  if (!/[0-9]/.test(password)) {
+    return "Password must contain at least one number."
+  }
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    return "Password must contain at least one special character."
+  }
+  return null
+}

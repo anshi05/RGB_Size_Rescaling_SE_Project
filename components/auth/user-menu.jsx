@@ -85,15 +85,6 @@ export function UserMenu({ user, onSignOut }) {
 
               {/* Navigation items */}
               <div className="space-y-1">
-                {/* Settings button */}
-                {/* <Button
-                  variant="ghost"
-                  className="w-full justify-start text-gray-700 hover:bg-gray-100"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Settings className="w-4 h-4 mr-3" />
-                  Settings
-                </Button> */}
 
                 {/* My Images button */}
                 <Button

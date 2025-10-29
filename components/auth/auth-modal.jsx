@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signUp, signIn, resetPassword } from "@/lib/auth";
+import { validatePassword } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
 export function AuthModal({ isOpen, onClose, onSuccess }) {
@@ -24,6 +25,23 @@ export function AuthModal({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [passwordRequirements, setPasswordRequirements] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    specialChar: false,
+  });
+
+  const checkPasswordRequirements = (pwd) => {
+    setPasswordRequirements({
+      length: pwd.length >= 8,
+      uppercase: /[A-Z]/.test(pwd),
+      lowercase: /[a-z]/.test(pwd),
+      number: /[0-9]/.test(pwd),
+      specialChar: /[^A-Za-z0-9]/.test(pwd),
+    });
+  };
 
   const { toast } = useToast();
 
@@ -35,9 +53,20 @@ export function AuthModal({ isOpen, onClose, onSuccess }) {
 
     try {
       if (mode === "signup") {
+        const passwordError = validatePassword(password);
+        if (passwordError) {
+          setError(passwordError);
+          setLoading(false);
+          toast({
+            title: "Invalid Password",
+            description: passwordError,
+            variant: "destructive",
+          });
+          return;
+        }
         const { data, error } = await signUp(email, password, fullName);
         if (error) {
-          if (error.message.includes("already registered")) {
+          if (error.message.includes("already registered") || data && data.user && !data.session) {
             setError("This email is already registered. Please sign in.");
             toast({
               title: "Registration Failed",
@@ -52,14 +81,6 @@ export function AuthModal({ isOpen, onClose, onSuccess }) {
               variant: "destructive",
             });
           }
-        } else if (data && data.user && !data.session) {
-          // Supabase returns data.user but null session and null error for existing emails to prevent enumeration.
-          setError("This email is already registered. Please sign in.");
-          toast({
-            title: "Account Already Exists ",
-            description: "This email is already registered. Please sign in.",
-            variant: "default",
-          });
         } else {
           setMessage("Check your email for the confirmation link!");
           toast({
@@ -181,11 +202,14 @@ export function AuthModal({ isOpen, onClose, onSuccess }) {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      checkPasswordRequirements(e.target.value);
+                    }}
                     className="pl-10 pr-10 h-12 border-2 border-gray-200 focus:border-rose-400 rounded-xl"
                     placeholder="Enter your password"
                     required
-                    minLength={6}
+                    minLength={8}
                   />
                   <button
                     type="button"
@@ -195,6 +219,26 @@ export function AuthModal({ isOpen, onClose, onSuccess }) {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+
+                {mode === "signup" && (
+                  <div className="mt-2 text-[0.7em] text-gray-600 grid grid-cols-2 gap-x-1">
+                    <p className={passwordRequirements.length ? "text-green-500" : "text-gray-500"}>
+                      {passwordRequirements.length ? "✓" : "•"} At least 8 characters
+                    </p>
+                    <p className={passwordRequirements.uppercase ? "text-green-500" : "text-gray-500"}>
+                      {passwordRequirements.uppercase ? "✓" : "•"} Contains an uppercase letter
+                    </p>
+                    <p className={passwordRequirements.lowercase ? "text-green-500" : "text-gray-500"}>
+                      {passwordRequirements.lowercase ? "✓" : "•"} Contains a lowercase letter
+                    </p>
+                    <p className={passwordRequirements.number ? "text-green-500" : "text-gray-500"}>
+                      {passwordRequirements.number ? "✓" : "•"} Contains a number
+                    </p>
+                    <p className={passwordRequirements.specialChar ? "text-green-500" : "text-gray-500"}>
+                      {passwordRequirements.specialChar ? "✓" : "•"} Contains a special character
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
