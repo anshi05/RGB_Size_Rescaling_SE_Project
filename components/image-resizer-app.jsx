@@ -443,6 +443,13 @@ export function ImageResizerApp({ onBack, session }) {
                             return;
                           }
 
+                          // check for maximum width
+                          if (newWidth > 8000) {
+                            setWidthError("Width cannot exceed 8000 pixels.");
+                            setResizeParams((prev) => ({ ...prev, width: value }));
+                            return;
+                          }
+
                           // all good
                           setWidthError("");
                           setResizeParams((prev) => ({
@@ -505,6 +512,13 @@ export function ImageResizerApp({ onBack, session }) {
 
                             if (isNaN(newHeight) || newHeight < 1) {
                               setHeightError("Please enter a valid height (min 1).");
+                              setResizeParams((prev) => ({ ...prev, height: value }));
+                              return;
+                            }
+
+                            // check for maximum height
+                            if (newHeight > 8000) {
+                              setHeightError("Height cannot exceed 8000 pixels.");
                               setResizeParams((prev) => ({ ...prev, height: value }));
                               return;
                             }
